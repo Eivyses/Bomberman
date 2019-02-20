@@ -3,6 +3,11 @@
 *.class
 *.war
 *.ear
+*.zip
+*.tar.gz
+*.rar
+*.log
+*.ctxt
 hs_err_pid*
 
 ## Robovm
