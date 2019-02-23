@@ -3,6 +3,7 @@ package com.mygdx.bomberman.entities;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.mygdx.bomberman.dto.PlayerDto;
 
 public class Player {
     private float x;
@@ -16,11 +17,11 @@ public class Player {
 
     private float speed;
 
-    public Player(String id, Texture texture, SpriteBatch batch) {
+    public Player(PlayerDto playerDto, Texture texture, SpriteBatch batch) {
         this.texture = texture;
-        this.id = id;
-        x = 0;
-        y = 0;
+        this.id = playerDto.getId();
+        x = playerDto.getX();
+        y = playerDto.getY();
         speed = 120.0f;
         this.batch = batch;
 

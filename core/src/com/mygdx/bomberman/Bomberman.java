@@ -7,33 +7,35 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.mygdx.bomberman.dto.Constants;
 import com.mygdx.bomberman.dto.PlayerDto;
-import com.mygdx.bomberman.dto.User;
 import com.mygdx.bomberman.entities.FrameRate;
 import com.mygdx.bomberman.entities.Player;
 import io.socket.client.IO;
 import io.socket.client.Socket;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.net.URISyntaxException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Bomberman extends ApplicationAdapter {
-    Texture bluePlayer;
+    private Texture bluePlayer;
     private SpriteBatch batch;
     private Socket socket;
     private Player player;
-    private List<Player> players;
+    private Map<String, Player> players;
     private FrameRate frameRate;
 
     @Override
     public void create() {
         batch = new SpriteBatch();
         bluePlayer = new Texture("textures\\Bomberman.png");
-//        player = new Player(bluePlayer, batch);
         frameRate = new FrameRate(batch);
-        players = new ArrayList<>();
+        players = new HashMap<>();
         connectSocket();
         configSocketEvents();
     }
@@ -59,8 +61,8 @@ public class Bomberman extends ApplicationAdapter {
         batch.begin();
         frameRate.update();
         frameRate.draw();
-        for (Player p : players) {
-            p.draw();
+        for (Map.Entry<String, Player> p : players.entrySet()) {
+            p.getValue().draw();
         }
         batch.end();
     }
@@ -72,7 +74,7 @@ public class Bomberman extends ApplicationAdapter {
 
     private void connectSocket() {
         try {
-            socket = IO.socket(Constants.getInstance().url + ":" + Constants.getInstance().port);
+            socket = IO.socket(Constants.url + ":" + Constants.port);
             socket.connect();
         } catch (URISyntaxException e) {
             e.printStackTrace();
@@ -82,43 +84,46 @@ public class Bomberman extends ApplicationAdapter {
     private void configSocketEvents() {
         // connect
         socket.on(Socket.EVENT_CONNECT, args -> System.out.println("Socket connected"))
-                // get user id
-                .on(Constants.getInstance().userIdString, args -> {
-                    User user = new Gson().fromJson(args[0].toString(), User.class);
-                    System.out.println("User Id: " + user.getId());
+                // get other players
+                .on("otherPlayers", args -> {
+                    List<PlayerDto> playerDtoList = new Gson().fromJson(args[0].toString(), new TypeToken<List<PlayerDto>>() {
+                    }.getType());
+                    for (PlayerDto playerDto : playerDtoList) {
+                        Player pl = new Player(playerDto, bluePlayer, batch);
+                        players.put(pl.getId(), pl);
+                    }
+                })
+                // new user connected
+                .on("newPlayerConnected", args -> {
+                    PlayerDto playerDto = new Gson().fromJson(args[0].toString(), PlayerDto.class);
+                    System.out.println("Player connected: " + playerDto.getId());
+                    Player p = new Player(playerDto, bluePlayer, batch);
+                    players.put(p.getId(), p);
                 })
                 // get user object
                 .on("user", args -> {
                     PlayerDto playerDto = new Gson().fromJson(args[0].toString(), PlayerDto.class);
-                    player = new Player(playerDto.getId(), bluePlayer, batch);
-                    players.add(player);
+                    player = new Player(playerDto, bluePlayer, batch);
+                    players.put(playerDto.getId(), player);
                 })
                 // get player moved
                 .on("userMove", args -> {
                     PlayerDto playerDto = new Gson().fromJson(args[0].toString(), PlayerDto.class);
-                    Player p = findPlayerIndex(playerDto.getId());
-                    if (p == null) {
-                        p = new Player(playerDto.getId(), bluePlayer, batch);
-                        players.add(p);
-                    }
+                    Player p = players.get(playerDto.getId());
                     p.setX(playerDto.getX());
                     p.setY(playerDto.getY());
-
-//                System.out.println("User " + keyReceived.getId() + " pressed button: " + keyReceived.getKey());
                 });
-    }
-
-    private Player findPlayerIndex(String id) {
-        for (Player p : players) {
-            if (p.getId().equals(id)) {
-                return p;
-            }
-        }
-        return null;
     }
 
     private void sendKeyPress() {
         PlayerDto playerDto = new PlayerDto(player);
-        socket.emit("move", new Gson().toJson(playerDto));
+
+        try {
+            JSONObject obj = new JSONObject(new Gson().toJson(playerDto));
+            socket.emit("move", obj);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }

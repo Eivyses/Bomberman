@@ -7,11 +7,10 @@
  * 
  * TODO: look for method to have classes for jsons
  */
-
+var serverPort = 5050;
 var app = require('express')();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
-var config = require('../core/assets/jsons/constants.json');
 
 var user = {
     id: '',
@@ -20,9 +19,11 @@ var user = {
     speed: 120
 };
 
+var users = [];
+
 // init server
-server.listen(config.port, function () {
-    console.log('Server is running on port ' + config.port);
+server.listen(serverPort, function () {
+    console.log('Server is running on port ' + serverPort);
 });
 
 
@@ -30,29 +31,41 @@ server.listen(config.port, function () {
 io.on('connection', function (socket) {
     var sid = socket.id;
     console.log('Player connected ' + sid);
-    // send userId to current user
-    socket.emit(config.userIdString, { id: sid });
-    user.id = sid;
+
+    user = {
+        id: sid,
+        x: 0,
+        y: 0,
+        speed: 120
+    };
+    // send new user data to him
     socket.emit('user', user);
+
+    // send other users to current user
+    socket.emit('otherPlayers', users);
+    console.log(users);
+    users.push(user);
+
+    // send connected user to other users
+    socket.broadcast.emit('newPlayerConnected', user);
 
     // disconnect
     socket.on('disconnect', function () {
         console.log('Player disconnected');
+        users.pop();
     });
 
     // user moved
     socket.on('move', function (playerDto) {
-        console.log(playerDto);
 
+        for (var u of users) {
+            if (u.id === playerDto.id) {
+                u.x = playerDto.x;
+                u.y = playerDto.y;
+                break;
+            }
+        }
         // emit user move to others
         socket.broadcast.emit('userMove', playerDto);
     });
-
-    // key received
-    // socket.on(config.keyClientString, function (key) {
-    //     // console.log("key pressed: " + key);
-
-    //     // emit key to other users
-    //     io.emit(config.keyServerString, { id: sid, key: key });
-    // });
 });
