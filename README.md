@@ -1,4 +1,4 @@
-# Bomberman game
+# Java implementation of bomberman game
 - Front-end created using [LibGdx](https://libgdx.badlogicgames.com/) Java library
 - Back-end created with java and [netty-socketio](https://github.com/mrniko/netty-socketio) library
 
