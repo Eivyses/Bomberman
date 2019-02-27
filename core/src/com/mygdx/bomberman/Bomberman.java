@@ -7,19 +7,15 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.mygdx.bomberman.dto.Constants;
-import com.mygdx.bomberman.dto.PlayerDto;
+import com.mygdx.bomberman.dto.*;
 import com.mygdx.bomberman.entities.FrameRate;
+import com.mygdx.bomberman.entities.Level;
 import com.mygdx.bomberman.entities.Player;
 import io.socket.client.IO;
 import io.socket.client.Socket;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Bomberman extends ApplicationAdapter {
@@ -29,6 +25,7 @@ public class Bomberman extends ApplicationAdapter {
     private Player player;
     private Map<String, Player> players;
     private FrameRate frameRate;
+    private Level level;
 
     @Override
     public void create() {
@@ -36,6 +33,7 @@ public class Bomberman extends ApplicationAdapter {
         bluePlayer = new Texture("textures\\Bomberman.png");
         frameRate = new FrameRate(batch);
         players = new HashMap<>();
+        level = new Level(batch);
         connectSocket();
         configSocketEvents();
     }
@@ -44,21 +42,30 @@ public class Bomberman extends ApplicationAdapter {
     public void render() {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        if (player != null) {
+            player.setMoved(false);
+        }
+        float dt = Gdx.graphics.getDeltaTime();
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            player.moveUp(Gdx.graphics.getDeltaTime());
-            sendKeyPress();
-        } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            player.moveDown(Gdx.graphics.getDeltaTime());
-            sendKeyPress();
-        } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            player.moveLeft(Gdx.graphics.getDeltaTime());
-            sendKeyPress();
-        } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            player.moveRight(Gdx.graphics.getDeltaTime());
-            sendKeyPress();
+            move(player.getX(), player.getY() + dt * player.getSpeed());
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+            move(player.getX(), player.getY() - dt * player.getSpeed());
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            move(player.getX() - dt * player.getSpeed(), player.getY());
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            move(player.getX() + dt * player.getSpeed(), player.getY());
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+            placeBomb(player.getX(), player.getY());
         }
 
         batch.begin();
+        if (level != null) {
+            level.draw();
+        }
         frameRate.update();
         frameRate.draw();
         for (Map.Entry<String, Player> p : players.entrySet()) {
@@ -67,9 +74,21 @@ public class Bomberman extends ApplicationAdapter {
         batch.end();
     }
 
+    private void move(float x, float y) {
+        MoveDto moveDto = new MoveDto(x, y);
+        socket.emit("move", moveDto.toJson());
+    }
+
+    private void placeBomb(float x, float y) {
+        MoveDto moveDto = new MoveDto(x, y);
+        socket.emit("bombPlaced", moveDto.toJson());
+    }
+
     @Override
     public void dispose() {
         batch.dispose();
+        PlayerDto playerDto = new PlayerDto(player);
+        socket.emit("disconnected", playerDto.toJson());
     }
 
     private void connectSocket() {
@@ -83,16 +102,11 @@ public class Bomberman extends ApplicationAdapter {
 
     private void configSocketEvents() {
         // connect
-        socket.on(Socket.EVENT_CONNECT, args -> System.out.println("Socket connected"))
-                // get other players
-                .on("otherPlayers", args -> {
-                    List<PlayerDto> playerDtoList = new Gson().fromJson(args[0].toString(), new TypeToken<List<PlayerDto>>() {
-                    }.getType());
-                    for (PlayerDto playerDto : playerDtoList) {
-                        Player pl = new Player(playerDto, bluePlayer, batch);
-                        players.put(pl.getId(), pl);
-                    }
-                })
+        socket.on(Socket.EVENT_CONNECT, args -> {
+            System.out.println("Socket connected");
+            socket.emit("connection", "me");
+            System.out.println("Socket emitted");
+        })
                 // new user connected
                 .on("newPlayerConnected", args -> {
                     PlayerDto playerDto = new Gson().fromJson(args[0].toString(), PlayerDto.class);
@@ -100,30 +114,39 @@ public class Bomberman extends ApplicationAdapter {
                     Player p = new Player(playerDto, bluePlayer, batch);
                     players.put(p.getId(), p);
                 })
-                // get user object
+                // get player object for new player
                 .on("user", args -> {
                     PlayerDto playerDto = new Gson().fromJson(args[0].toString(), PlayerDto.class);
                     player = new Player(playerDto, bluePlayer, batch);
                     players.put(playerDto.getId(), player);
                 })
+                // get other players for new player
+                .on("otherPlayers", args -> {
+                    PlayersDto playersDto = new Gson().fromJson(args[0].toString(), PlayersDto.class);
+                    players.clear();
+                    for (Map.Entry<String, PlayerDto> p : playersDto.getPlayers().entrySet()) {
+                        Player pl = new Player(p.getValue(), bluePlayer, batch);
+                        players.put(pl.getId(), pl);
+                    }
+                })
+                // get map for new player
+                .on("map", args -> {
+                    LevelDto levelDto = new Gson().fromJson(args[0].toString(), LevelDto.class);
+                    level.setLevel(levelDto);
+                })
                 // get player moved
-                .on("userMove", args -> {
+                .on("playerMoved", args -> {
                     PlayerDto playerDto = new Gson().fromJson(args[0].toString(), PlayerDto.class);
                     Player p = players.get(playerDto.getId());
+                    if (p == null) {
+                        p = new Player(playerDto, bluePlayer, batch);
+                    }
+                    // hack
+                    if (player.getId().equals(p.getId())) {
+                        player = p;
+                    }
                     p.setX(playerDto.getX());
                     p.setY(playerDto.getY());
                 });
-    }
-
-    private void sendKeyPress() {
-        PlayerDto playerDto = new PlayerDto(player);
-
-        try {
-            JSONObject obj = new JSONObject(new Gson().toJson(playerDto));
-            socket.emit("move", obj);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 }

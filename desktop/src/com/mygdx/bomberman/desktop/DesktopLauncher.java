@@ -7,8 +7,8 @@ import com.mygdx.bomberman.Bomberman;
 public class DesktopLauncher {
     public static void main(String[] arg) {
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-        config.width = 640;
-        config.height = 400;
+        config.width = 480;
+        config.height = 352;
 
         new LwjglApplication(new Bomberman(), config);
     }

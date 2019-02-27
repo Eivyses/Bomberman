@@ -1,6 +1,9 @@
 package com.mygdx.bomberman.dto;
 
+import com.google.gson.Gson;
 import com.mygdx.bomberman.entities.Player;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class PlayerDto {
     private float x;
@@ -20,6 +23,15 @@ public class PlayerDto {
         this.x = player.getX();
         this.y = player.getY();
         this.id = player.getId();
+    }
+
+    public Object toJson() {
+        try {
+            return new JSONObject(new Gson().toJson(this));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public float getX() {

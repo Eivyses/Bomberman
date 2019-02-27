@@ -9,8 +9,9 @@ public class Player {
     private float x;
     private float y;
     private int maxWidth;
-    private int maxHeigth;
+    private int maxHeight;
     private String id;
+    private boolean moved;
 
     private Texture texture;
     private SpriteBatch batch;
@@ -26,15 +27,23 @@ public class Player {
         this.batch = batch;
 
         maxWidth = Gdx.graphics.getWidth() - texture.getWidth();
-        maxHeigth = Gdx.graphics.getHeight() - texture.getHeight();
+        maxHeight = Gdx.graphics.getHeight() - texture.getHeight();
+    }
+
+    public boolean isMoved() {
+        return moved;
+    }
+
+    public void setMoved(boolean moved) {
+        this.moved = moved;
     }
 
     public int getMaxWidth() {
         return maxWidth;
     }
 
-    public int getMaxHeigth() {
-        return maxHeigth;
+    public int getMaxHeight() {
+        return maxHeight;
     }
 
     public String getId() {
@@ -71,8 +80,8 @@ public class Player {
 
     public void moveUp(float dt) {
         y += dt * speed;
-        if (y > maxHeigth) {
-            y = maxHeigth;
+        if (y > maxHeight) {
+            y = maxHeight;
         }
     }
 
