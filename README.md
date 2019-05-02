@@ -9,3 +9,4 @@ Run server by command `mvn exec:java`. Also, add `mvn clean install` to before b
 - Create new `Application` configuration on intellij.
 - Select main class at `com.mygdx.bomberman.desktop.DesktopLauncher`. 
 - Set working directory to `core/assets`
+- Set classpath of module to `Bomberman.desktop.main`
