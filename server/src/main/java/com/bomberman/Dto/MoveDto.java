@@ -1,22 +1,19 @@
 package com.bomberman.Dto;
 
+import com.bomberman.entities.Position;
+
 public class MoveDto {
-    private float x;
-    private float y;
+  private final Position position;
 
-    public float getX() {
-        return x;
-    }
+  public MoveDto(final Position position) {
+    this.position = position;
+  }
 
-    public void setX(float x) {
-        this.x = x;
-    }
+  public MoveDto() {
+    this.position = new Position();
+  }
 
-    public float getY() {
-        return y;
-    }
-
-    public void setY(float y) {
-        this.y = y;
-    }
+  public Position getPosition() {
+    return position;
+  }
 }

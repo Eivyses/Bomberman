@@ -1,9 +1,6 @@
 package com.bomberman;
 
-import com.bomberman.Dto.LevelDto;
-import com.bomberman.Dto.MoveDto;
-import com.bomberman.Dto.PlayerDto;
-import com.bomberman.Dto.PlayersDto;
+import com.bomberman.Dto.*;
 import com.corundumstudio.socketio.Configuration;
 import com.corundumstudio.socketio.SocketIOServer;
 
@@ -12,11 +9,12 @@ import java.util.concurrent.TimeUnit;
 
 public class BombermanLauncher {
 
-  public static void main(String[] args) throws InterruptedException {
-    PlayersDto players = new PlayersDto();
-    LevelDto levelDto = new LevelDto();
+  public static void main(final String[] args) throws InterruptedException {
+    final PlayersDto players = new PlayersDto();
+    final LevelDto levelDto = new LevelDto();
+    final BombsDto bombsDto = new BombsDto();
 
-    var config = new Configuration();
+    final var config = new Configuration();
     config.setPort(5050);
 
     final var server = new SocketIOServer(config);
@@ -27,12 +25,13 @@ public class BombermanLauncher {
         (socketIOClient, data, ackRequest) -> {
           System.out.println("new client connected");
           System.out.println(socketIOClient.getSessionId());
-          var playerDto = new PlayerDto(0, 0, socketIOClient.getSessionId().toString());
+          final var playerDto = new PlayerDto(0, 0, socketIOClient.getSessionId().toString());
 
           players.getPlayers().put(playerDto.getId(), playerDto);
           socketIOClient.sendEvent("user", playerDto);
           socketIOClient.sendEvent("otherPlayers", players);
           socketIOClient.sendEvent("map", levelDto);
+          socketIOClient.sendEvent("bombPlaced", bombsDto);
           server.getBroadcastOperations().sendEvent("newPlayerConnected", playerDto);
         });
 
@@ -48,18 +47,12 @@ public class BombermanLauncher {
         "move",
         MoveDto.class,
         (socketIOClient, moveDto, ackRequest) -> {
-          var player = players.getPlayers().get(socketIOClient.getSessionId().toString());
-          if (moveDto.getX() < 0) {
-            moveDto.setX(0);
-          }
-          if (moveDto.getY() < 0) {
-            moveDto.setY(0);
-          }
+          final PlayerDto player =
+              players.getPlayers().get(socketIOClient.getSessionId().toString());
           if (levelDto.validMove(moveDto, player)) {
             //                System.out.println("moving to: " + moveDto.getX() + " : " +
             // moveDto.getY());
-            player.setX(moveDto.getX());
-            player.setY(moveDto.getY());
+            player.setPosition(moveDto.getPosition());
           } else {
             //                System.out.println("Invalid move: " + moveDto.getX() + " : " +
             // moveDto.getY());
@@ -71,21 +64,34 @@ public class BombermanLauncher {
         });
 
     server.addEventListener(
-        "bombPlaced",
-        MoveDto.class,
-        (socketIOClient, moveDto, ackRequest) -> {
-          var player = players.getPlayers().get(socketIOClient.getSessionId().toString());
-          if (levelDto.canPlaceBomb(moveDto.getX(), moveDto.getY())) {
-            levelDto.placeBomb(moveDto.getX(), moveDto.getY());
-            server.getBroadcastOperations().sendEvent("map", levelDto);
+        "bombPlace",
+        PlayerDto.class,
+        (socketIOClient, playerDto, ackRequest) -> {
+          final PlayerDto player =
+              players.getPlayers().get(socketIOClient.getSessionId().toString());
+          if (player.canPlaceBomb(bombsDto.getBombs())) {
+            final BombDto bomb = player.placeBomb();
+            bombsDto.getBombs().add(bomb);
+            server.getBroadcastOperations().sendEvent("bombPlaced", bombsDto);
             System.out.println("BOMB PLACED");
             final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
             executor.schedule(
                 () -> {
-                  levelDto.removeBomb(moveDto.getX(), moveDto.getY());
-                  server.getBroadcastOperations().sendEvent("map", levelDto);
-
+                  bombsDto.getBombs().remove(bomb);
+                  levelDto.createBombAction(bomb, LevelObject.EXPLOSION);
+                  socketIOClient.sendEvent("map", levelDto);
+                  server.getBroadcastOperations().sendEvent("bombPlaced", bombsDto);
+                  //                  server.getBroadcastOperations().sendEvent("map", levelDto);
                   System.out.println("BOOM FUCKER");
+                  final ScheduledThreadPoolExecutor explosionExecutor =
+                      new ScheduledThreadPoolExecutor(1);
+                  explosionExecutor.schedule(
+                      () -> {
+                        levelDto.createBombAction(bomb, LevelObject.TERRAIN);
+                        socketIOClient.sendEvent("map", levelDto);
+                      },
+                      1,
+                      TimeUnit.SECONDS);
                 },
                 3,
                 TimeUnit.SECONDS);

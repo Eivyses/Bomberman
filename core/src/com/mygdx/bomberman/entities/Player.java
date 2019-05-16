@@ -5,26 +5,25 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.bomberman.dto.PlayerDto;
 
-public class Player {
-  private float x;
-  private float y;
-  private int maxWidth;
-  private int maxHeight;
-  private String id;
+public class Player extends MovableObject {
+  private final int maxWidth;
+  private final int maxHeight;
+  private final String id;
   private boolean moved;
+  private int bombRange;
 
-  private Texture texture;
-  private SpriteBatch batch;
+  private final Texture texture;
+  private final SpriteBatch batch;
 
   private float speed;
 
-  public Player(PlayerDto playerDto, Texture texture, SpriteBatch batch) {
+  public Player(final PlayerDto playerDto, final Texture texture, final SpriteBatch batch) {
+    super(playerDto.getPosition());
     this.texture = texture;
     this.id = playerDto.getId();
-    x = playerDto.getX();
-    y = playerDto.getY();
     speed = 120.0f;
     this.batch = batch;
+    this.bombRange = 3;
 
     maxWidth = Gdx.graphics.getWidth() - texture.getWidth();
     maxHeight = Gdx.graphics.getHeight() - texture.getHeight();
@@ -34,7 +33,15 @@ public class Player {
     return moved;
   }
 
-  public void setMoved(boolean moved) {
+  public int getBombRange() {
+    return bombRange;
+  }
+
+  public void setBombRange(final int bombRange) {
+    this.bombRange = bombRange;
+  }
+
+  public void setMoved(final boolean moved) {
     this.moved = moved;
   }
 
@@ -59,58 +66,14 @@ public class Player {
   }
 
   public void draw() {
-    batch.draw(texture, x, y);
-  }
-
-  public float getX() {
-    return x;
-  }
-
-  public void setX(float x) {
-    this.x = x;
-  }
-
-  public float getY() {
-    return y;
-  }
-
-  public void setY(float y) {
-    this.y = y;
-  }
-
-  public void moveUp(float dt) {
-    y += dt * speed;
-    if (y > maxHeight) {
-      y = maxHeight;
-    }
-  }
-
-  public void moveDown(float dt) {
-    y -= dt * speed;
-    if (y < 0) {
-      y = 0.0f;
-    }
-  }
-
-  public void moveRight(float dt) {
-    x += dt * speed;
-    if (x > maxWidth) {
-      x = maxWidth;
-    }
-  }
-
-  public void moveLeft(float dt) {
-    x -= dt * speed;
-    if (x < 0) {
-      x = 0.0f;
-    }
+    batch.draw(texture, getPosition().getX(), getPosition().getY());
   }
 
   public float getSpeed() {
     return speed;
   }
 
-  public void setSpeed(float speed) {
+  public void setSpeed(final float speed) {
     this.speed = speed;
   }
 }

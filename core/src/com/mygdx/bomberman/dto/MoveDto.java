@@ -1,40 +1,31 @@
 package com.mygdx.bomberman.dto;
 
 import com.google.gson.Gson;
+import com.mygdx.bomberman.entities.Position;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MoveDto {
-    private float x;
-    private float y;
+  private final Position position;
 
-    public MoveDto(float x, float y) {
-        this.x = x;
-        this.y = y;
-    }
+  public MoveDto(final Position position) {
+    this.position = position;
+  }
 
-    public float getX() {
-        return x;
-    }
+  public MoveDto(final float x, final float y) {
+    this.position = new Position(x, y);
+  }
 
-    public void setX(float x) {
-        this.x = x;
-    }
+  public Position getPosition() {
+    return position;
+  }
 
-    public float getY() {
-        return y;
+  public Object toJson() {
+    try {
+      return new JSONObject(new Gson().toJson(this));
+    } catch (final JSONException e) {
+      e.printStackTrace();
     }
-
-    public void setY(float y) {
-        this.y = y;
-    }
-
-    public Object toJson() {
-        try {
-            return new JSONObject(new Gson().toJson(this));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+    return null;
+  }
 }

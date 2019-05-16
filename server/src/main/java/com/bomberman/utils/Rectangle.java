@@ -3,63 +3,66 @@ package com.bomberman.utils;
 import com.bomberman.Dto.MoveDto;
 import com.bomberman.Dto.PlayerDto;
 import com.bomberman.LevelObject;
+import com.bomberman.constants.MapConst;
+import com.bomberman.entities.Position;
 
 public class Rectangle {
 
-  private int leftBotX;
-  private int leftBotY;
+  private Position leftBotPos;
+  private Position rightTopPos;
+  private Position leftTopPos;
+  private Position rightBotPos;
 
-  private int rightTopX;
-  private int rightTopY;
+  private final Position realPos;
 
-  private int leftTopX;
-  private int leftTopY;
-
-  private int rightBotX;
-  private int rightBotY;
-
-  private float x;
-  private float y;
-
-  public Rectangle(MoveDto moveDto, int height) {
-    x = moveDto.getX();
-    y = moveDto.getY();
-    fillRectangle(x, y, height);
+  public Rectangle(final MoveDto moveDto, final int height) {
+    realPos = moveDto.getPosition();
+    fillRectangle(realPos, height);
   }
 
-  public Rectangle(PlayerDto playerDto, int height) {
-    x = playerDto.getX();
-    y = playerDto.getY();
-    fillRectangle(x, y, height);
+  public Rectangle(final PlayerDto playerDto, final int height) {
+    realPos = playerDto.getPosition();
+    fillRectangle(realPos, height);
   }
 
-  private void fillRectangle(float x, float y, int height) {
-    leftBotX = formatPlayerPositionX(x, true);
-    leftBotY = formatPlayerPositionY(y, true, height);
+  private void fillRectangle(final Position realPos, final int height) {
+    int x = formatPlayerPositionX(realPos.getX(), true);
+    int y = formatPlayerPositionY(realPos.getY(), true, height);
+    leftBotPos = new Position(x, y);
 
-    rightTopX = formatPlayerPositionX(x, false);
-    rightTopY = formatPlayerPositionY(y, false, height);
+    x = formatPlayerPositionX(realPos.getX(), false);
+    y = formatPlayerPositionY(realPos.getY(), false, height);
+    rightTopPos = new Position(x, y);
 
-    leftTopX = formatPlayerPositionX(x, true);
-    leftTopY = formatPlayerPositionY(y, false, height);
+    x = formatPlayerPositionX(realPos.getX(), true);
+    y = formatPlayerPositionY(realPos.getY(), false, height);
+    leftTopPos = new Position(x, y);
 
-    rightBotX = formatPlayerPositionX(x, false);
-    rightBotY = formatPlayerPositionY(y, true, height);
+    x = formatPlayerPositionX(realPos.getX(), false);
+    y = formatPlayerPositionY(realPos.getY(), true, height);
+    rightBotPos = new Position(x, y);
   }
 
-  public boolean collidesWith(int[][] level, LevelObject levelObject) {
-    return collides(level, rightTopX, rightTopY, levelObject)
-        || collides(level, rightBotX, rightBotY, levelObject)
-        || collides(level, leftTopX, leftTopY, levelObject)
-        || collides(level, leftBotX, leftBotY, levelObject);
+  public boolean outOfBounds(final float boundX, final float boundY) {
+    return realPos.getX() + 14 > boundX
+        || realPos.getY() + 22 > boundY
+        || realPos.getY() < 0
+        || realPos.getX() < 0;
+  }
+
+  public boolean collidesWith(final int[][] level, final LevelObject levelObject) {
+    return collides(level, rightTopPos, levelObject)
+        || collides(level, rightBotPos, levelObject)
+        || collides(level, leftBotPos, levelObject)
+        || collides(level, leftTopPos, levelObject);
   }
 
   public boolean triesToLeaveObject(
-      int[][] level, LevelObject levelObject, Rectangle startRectangle) {
-    boolean objectRightTop = collides(level, rightTopX, rightTopY, levelObject);
-    boolean objectRightBot = collides(level, rightBotX, rightBotY, levelObject);
-    boolean objectLeftTop = collides(level, leftTopX, leftTopY, levelObject);
-    boolean objectLeftBot = collides(level, leftBotX, leftBotY, levelObject);
+      final int[][] level, final LevelObject levelObject, final Rectangle startRectangle) {
+    final boolean objectRightTop = collides(level, rightTopPos, levelObject);
+    final boolean objectRightBot = collides(level, rightBotPos, levelObject);
+    final boolean objectLeftTop = collides(level, leftTopPos, levelObject);
+    final boolean objectLeftBot = collides(level, leftBotPos, levelObject);
 
     // TODO: if two bombs placed, user can just walk out... fix
     // in a center of object, allow to go everywhere
@@ -67,39 +70,40 @@ public class Rectangle {
       return true;
     }
     if (objectLeftTop && objectRightTop) {
-      return y <= startRectangle.y;
+      return realPos.getY() <= startRectangle.realPos.getY();
     }
     if (objectLeftTop && objectLeftBot) {
-      return x >= startRectangle.x;
+      return realPos.getX() >= startRectangle.realPos.getX();
     }
     if (objectLeftBot && objectRightBot) {
-      return y >= startRectangle.y;
+      return realPos.getY() >= startRectangle.realPos.getY();
     }
     if (objectRightTop && objectRightBot) {
-      return x <= startRectangle.x;
+      return realPos.getX() <= startRectangle.realPos.getX();
     }
     //        System.out.println(rightTopX + " : " + rightTopY);
     return true;
   }
 
-  private boolean collides(int[][] level, int x, int y, LevelObject levelObject) {
+  private boolean collides(final int[][] level, final Position pos, final LevelObject levelObject) {
+    final int x = (int) pos.getX();
+    final int y = (int) pos.getY();
     return level[y][x] == levelObject.getValue();
   }
 
-  private int formatPlayerPositionX(float pos, boolean start) {
-    int roundPos = (int) pos;
+  private int formatPlayerPositionX(final float pos, final boolean start) {
+    final int roundPos = (int) pos;
     if (roundPos == 0) {
       return 0;
     }
-    int ending = start ? 0 : 14;
-    int formatted = (roundPos + ending) / 32;
-    return formatted;
+    final int ending = start ? 0 : 14;
+    return (roundPos + ending) / MapConst.TEXTURE_SIZE;
   }
 
-  private int formatPlayerPositionY(float pos, boolean start, int height) {
-    int roundPos = (int) pos;
-    int ending = start ? 0 : 22;
-    int formatted = (roundPos + ending) / 32;
+  private int formatPlayerPositionY(final float pos, final boolean start, final int height) {
+    final int roundPos = (int) pos;
+    final int ending = start ? 0 : 22;
+    final int formatted = (roundPos + ending) / MapConst.TEXTURE_SIZE;
     return height - 1 - formatted;
   }
 }

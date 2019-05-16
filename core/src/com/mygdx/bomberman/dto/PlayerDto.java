@@ -1,60 +1,42 @@
 package com.mygdx.bomberman.dto;
 
 import com.google.gson.Gson;
+import com.mygdx.bomberman.entities.MovableObject;
 import com.mygdx.bomberman.entities.Player;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class PlayerDto {
-    private float x;
-    private float y;
-    private String id;
+public class PlayerDto extends MovableObject {
+  private String id;
 
-    public PlayerDto(float x, float y, String id) {
-        this.x = x;
-        this.y = y;
-        this.id = id;
-    }
+  public PlayerDto(final float x, final float y, final String id) {
+    super(x, y);
+    this.id = id;
+  }
 
-    public PlayerDto() {
-    }
+  public PlayerDto() {
+    super();
+  }
 
-    public PlayerDto(Player player) {
-        this.x = player.getX();
-        this.y = player.getY();
-        this.id = player.getId();
-    }
+  public PlayerDto(final Player player) {
+    super(player.getPosition());
+    this.id = player.getId();
+  }
 
-    public Object toJson() {
-        try {
-            return new JSONObject(new Gson().toJson(this));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
+  public Object toJson() {
+    try {
+      return new JSONObject(new Gson().toJson(this));
+    } catch (final JSONException e) {
+      e.printStackTrace();
     }
+    return null;
+  }
 
-    public float getX() {
-        return x;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setX(float x) {
-        this.x = x;
-    }
-
-    public float getY() {
-        return y;
-    }
-
-    public void setY(float y) {
-        this.y = y;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(final String id) {
+    this.id = id;
+  }
 }

@@ -1,42 +1,71 @@
 package com.bomberman.Dto;
 
+import com.bomberman.entities.MovableObject;
+import com.bomberman.entities.Position;
 
-public class PlayerDto {
-    private float x;
-    private float y;
-    private String id;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
-    public PlayerDto(float x, float y, String id) {
-        this.x = x;
-        this.y = y;
-        this.id = id;
+public class PlayerDto extends MovableObject {
+  private String id;
+  private int bombRange;
+  private int maxBombCount;
+
+  public PlayerDto(final float x, final float y, final String id) {
+    super(x, y);
+    this.id = id;
+    bombRange = 3;
+    maxBombCount = 3;
+  }
+
+  public PlayerDto(final Position position, final String id) {
+    super(position);
+    this.id = id;
+  }
+
+  public PlayerDto() {
+    super();
+  }
+
+  public int getBombRange() {
+    return bombRange;
+  }
+
+  public boolean canPlaceBomb(final List<BombDto> boms) {
+    final List<BombDto> usersBombs =
+        boms.stream()
+            .filter(b -> b.getPlayer().getId().equals(this.id))
+            .collect(Collectors.toList());
+    final boolean alreadyOnBomb =
+        usersBombs.stream()
+            .anyMatch(
+                b ->
+                    Objects.equals(Position.round(b.getPosition()), Position.round(getPosition())));
+
+    if (alreadyOnBomb) {
+      return false;
     }
+    return usersBombs.size() < maxBombCount;
+  }
 
-    public PlayerDto() {
-    }
+  public BombDto placeBomb() {
+    return new BombDto(this, getPosition());
+  }
 
-    public float getX() {
-        return x;
-    }
+  public void setBombRange(final int bombRange) {
+    this.bombRange = bombRange;
+  }
 
-    public void setX(float x) {
-        this.x = x;
-    }
+  public int getMaxBombCount() {
+    return maxBombCount;
+  }
 
-    public float getY() {
-        return y;
-    }
+  public void setMaxBombCount(final int maxBombCount) {
+    this.maxBombCount = maxBombCount;
+  }
 
-    public void setY(float y) {
-        this.y = y;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
+  public String getId() {
+    return id;
+  }
 }
-

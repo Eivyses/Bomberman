@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.google.gson.Gson;
 import com.mygdx.bomberman.dto.*;
+import com.mygdx.bomberman.entities.Bomb;
 import com.mygdx.bomberman.entities.FrameRate;
 import com.mygdx.bomberman.entities.Level;
 import com.mygdx.bomberman.entities.Player;
@@ -15,15 +16,19 @@ import io.socket.client.IO;
 import io.socket.client.Socket;
 
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Bomberman extends ApplicationAdapter {
   private Texture bluePlayer;
+  private Texture bombTexture;
   private SpriteBatch batch;
   private Socket socket;
   private Player player;
   private Map<String, Player> players;
+  private List<Bomb> bombs;
   private FrameRate frameRate;
   private Level level;
 
@@ -31,9 +36,11 @@ public class Bomberman extends ApplicationAdapter {
   public void create() {
     batch = new SpriteBatch();
     bluePlayer = new Texture("textures\\Bomberman.png");
+    bombTexture = new Texture("textures\\Bomb.png");
     frameRate = new FrameRate(batch);
     players = new HashMap<>();
     level = new Level(batch);
+    bombs = new ArrayList<>();
     connectSocket();
     configSocketEvents();
   }
@@ -45,61 +52,69 @@ public class Bomberman extends ApplicationAdapter {
     if (player != null) {
       player.setMoved(false);
     }
-    float dt = Gdx.graphics.getDeltaTime();
+    final float dt = Gdx.graphics.getDeltaTime();
     if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-      move(player.getX(), player.getY() + dt * player.getSpeed());
+      move(player.getPosition().getX(), player.getPosition().getY() + dt * player.getSpeed());
     }
     if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-      move(player.getX(), player.getY() - dt * player.getSpeed());
+      move(player.getPosition().getX(), player.getPosition().getY() - dt * player.getSpeed());
     }
     if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-      move(player.getX() - dt * player.getSpeed(), player.getY());
+      move(player.getPosition().getX() - dt * player.getSpeed(), player.getPosition().getY());
     }
     if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-      move(player.getX() + dt * player.getSpeed(), player.getY());
+      move(player.getPosition().getX() + dt * player.getSpeed(), player.getPosition().getY());
     }
     if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && Gdx.input.isKeyPressed(Input.Keys.UP)) {
-      move(player.getX() + dt * player.getSpeed(), player.getY() + dt * player.getSpeed());
+      move(
+          player.getPosition().getX() + dt * player.getSpeed(),
+          player.getPosition().getY() + dt * player.getSpeed());
     }
     if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-      move(player.getX() + dt * player.getSpeed(), player.getY() - dt * player.getSpeed());
+      move(
+          player.getPosition().getX() + dt * player.getSpeed(),
+          player.getPosition().getY() - dt * player.getSpeed());
     }
     if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && Gdx.input.isKeyPressed(Input.Keys.UP)) {
-      move(player.getX() - dt * player.getSpeed(), player.getY() + dt * player.getSpeed());
+      move(
+          player.getPosition().getX() - dt * player.getSpeed(),
+          player.getPosition().getY() + dt * player.getSpeed());
     }
     if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-      move(player.getX() - dt * player.getSpeed(), player.getY() - dt * player.getSpeed());
+      move(
+          player.getPosition().getX() - dt * player.getSpeed(),
+          player.getPosition().getY() - dt * player.getSpeed());
     }
     if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-      placeBomb(player.getX(), player.getY());
+      placeBomb(player);
     }
 
     batch.begin();
     if (level != null) {
       level.draw();
     }
+    bombs.forEach(Bomb::draw);
+    players.forEach((key, value) -> value.draw());
+
     frameRate.update();
     frameRate.draw();
-    for (Map.Entry<String, Player> p : players.entrySet()) {
-      p.getValue().draw();
-    }
     batch.end();
   }
 
-  private void move(float x, float y) {
-    MoveDto moveDto = new MoveDto(x, y);
+  private void move(final float x, final float y) {
+    final MoveDto moveDto = new MoveDto(x, y);
     socket.emit("move", moveDto.toJson());
   }
 
-  private void placeBomb(float x, float y) {
-    MoveDto moveDto = new MoveDto(x, y);
-    socket.emit("bombPlaced", moveDto.toJson());
+  private void placeBomb(final Player player) {
+    final PlayerDto playerDto = new PlayerDto(player);
+    socket.emit("bombPlace", playerDto.toJson());
   }
 
   @Override
   public void dispose() {
     batch.dispose();
-    PlayerDto playerDto = new PlayerDto(player);
+    final PlayerDto playerDto = new PlayerDto(player);
     socket.emit("disconnected", playerDto.toJson());
   }
 
@@ -107,7 +122,7 @@ public class Bomberman extends ApplicationAdapter {
     try {
       socket = IO.socket(Constants.url + ":" + Constants.port);
       socket.connect();
-    } catch (URISyntaxException e) {
+    } catch (final URISyntaxException e) {
       e.printStackTrace();
     }
   }
@@ -156,11 +171,27 @@ public class Bomberman extends ApplicationAdapter {
               LevelDto levelDto = new Gson().fromJson(args[0].toString(), LevelDto.class);
               level.setLevel(levelDto);
             })
+        // bomb placed
+        .on(
+            "bombPlaced",
+            args -> {
+              final BombsDto bombsDto = new Gson().fromJson(args[0].toString(), BombsDto.class);
+              bombs.clear();
+              bombsDto.getBombs().forEach(bomb -> bombs.add(new Bomb(bomb, bombTexture, batch)));
+            })
+        // bomb exploded
+        .on(
+            "bombExploded",
+            args -> {
+              final BombsDto bombsDto = new Gson().fromJson(args[0].toString(), BombsDto.class);
+              bombs.clear();
+              bombsDto.getBombs().forEach(bomb -> bombs.add(new Bomb(bomb, bombTexture, batch)));
+            })
         // get player moved
         .on(
             "playerMoved",
             args -> {
-              PlayerDto playerDto = new Gson().fromJson(args[0].toString(), PlayerDto.class);
+              final PlayerDto playerDto = new Gson().fromJson(args[0].toString(), PlayerDto.class);
               Player p = players.get(playerDto.getId());
               if (p == null) {
                 p = new Player(playerDto, bluePlayer, batch);
@@ -169,8 +200,7 @@ public class Bomberman extends ApplicationAdapter {
               if (player.getId().equals(p.getId())) {
                 player = p;
               }
-              p.setX(playerDto.getX());
-              p.setY(playerDto.getY());
+              p.setPosition(playerDto.getPosition());
             });
   }
 }
