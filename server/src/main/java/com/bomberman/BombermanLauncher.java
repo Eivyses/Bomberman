@@ -9,6 +9,7 @@ public class BombermanLauncher {
         config.setPort(5050);
 
         var game = new Game();
+        game.initGame();
 
         new SocketServer(game);
     }

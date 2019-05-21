@@ -9,33 +9,27 @@ import java.util.List;
 public class Game {
 
     private PlayerFactory playerFactory;
-    private List<Player> players;
-    private List<Bomb> bombs;
-    private List<Wall> walls;
-    private List<BombExplosion> bombExplosions;
+    private GameState gameState;
 
     public Game() {
         playerFactory = new PlayerFactory();
-        players = new ArrayList<>();
-        bombs = new ArrayList<>();
-        walls = new ArrayList<>();
-        bombExplosions = new ArrayList<>();
+        gameState = new GameState();
     }
 
     public String addPlayer(String id) {
         var newPlayer = playerFactory.createPlayer(id);
 
-        players.add(newPlayer);
+        gameState.getPlayers().add(newPlayer);
 
         return newPlayer.getId();
     }
 
     public void removePlayer(String id) {
-        players.removeIf(x -> x.getId().equals(id));
+        gameState.getPlayers().removeIf(x -> x.getId().equals(id));
     }
 
     public void movePlayer(String playerId, Position position) {
-        var player = players.stream().filter(x -> x.getId().equals(playerId)).findFirst();
+        var player = gameState.getPlayers().stream().filter(x -> x.getId().equals(playerId)).findFirst();
 
         player.ifPresent(value -> value.setPosition(position));
     }
@@ -47,17 +41,21 @@ public class Game {
         var position = player.getPosition();
         var explosionTime = currentTime.plusSeconds(bombDurationInSeconds);
 
-        bombs.add(new Bomb(position, explosionTime));
+        gameState.getBombs().add(new Bomb(position, explosionTime));
     }
 
     public void initGame() {
-        walls.add(new Wall(new Position(32f, 32f)));
+        gameState.getWalls().add(new Wall(new Position(32f, 32f)));
     }
 
     private Player getPlayer(String playerId) {
-        return players.stream()
+        return gameState.getPlayers().stream()
                 .filter(x -> x.getId().equals(playerId))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public GameState getGameState() {
+        return gameState;
     }
 }

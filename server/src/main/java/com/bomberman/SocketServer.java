@@ -39,7 +39,7 @@ public class SocketServer {
             game.addPlayer(playerId);
 
             client.sendEvent("connectNewPlayerSuccess", playerId);
-            client.sendEvent("getGameState", game);
+            client.sendEvent("getGameState", game.getGameState());
         });
 
         server.addEventListener(
@@ -60,6 +60,7 @@ public class SocketServer {
                     game.movePlayer(playerId, moveDto.getPosition());
 
                     client.sendEvent("movePlayerSuccess");
+                    client.sendEvent("getGameState", game.getGameState());
                 });
 
         server.addEventListener(
