@@ -6,17 +6,26 @@ public class Player {
 
     private String id;
     private Position position;
+    private int bombDurationInSeconds = 2;
 
     public Player(String id, Position position) {
         this.id = id;
         this.position = position;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public Position getPosition() {
+        return position;
+    }
+
     public void setPosition(Position position) {
 
     }
 
-    public String getId() {
-        return id;
+    public int getBombDurationInSeconds() {
+        return bombDurationInSeconds;
     }
 }

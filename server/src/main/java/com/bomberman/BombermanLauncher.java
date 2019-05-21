@@ -95,6 +95,12 @@ public class BombermanLauncher {
             "bombPlace",
             PlayerDto.class,
             (socketIOClient, playerDto, ackRequest) -> {
+                var playerId = getPlayerId(socketIOClient);
+
+                game.placeBomb(playerId);
+                socketIOClient.sendEvent("game", game);
+                socketIOClient.sendEvent("bombPlaced");
+
                 final PlayerDto player =
                     players.getPlayers().get(socketIOClient.getSessionId().toString());
                 if (player.canPlaceBomb(bombsDto.getBombs())) {

@@ -1,6 +1,7 @@
 package com.bomberman.zilvinasGame;
 
 import com.bomberman.entities.Position;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,11 +37,24 @@ public class Game {
         player.ifPresent(value -> value.setPosition(position));
     }
 
-    public void placeBomb(Position position) {
-        bombs.add(new Bomb(position));
+    public void placeBomb(String playerId) {
+        var currentTime = ZonedDateTime.now();
+        var player = getPlayer(playerId);
+        var bombDurationInSeconds = player.getBombDurationInSeconds();
+        var position = player.getPosition();
+        var explosionTime = currentTime.plusSeconds(bombDurationInSeconds);
+
+        bombs.add(new Bomb(position, explosionTime));
     }
 
     public void initGame() {
-        walls.add(new Wall(new Position(2f, 2f)));
+        walls.add(new Wall(new Position(32f, 32f)));
+    }
+
+    private Player getPlayer(String playerId) {
+        return players.stream()
+            .filter(x -> x.getId().equals(playerId))
+            .findFirst()
+            .orElse(null);
     }
 }
