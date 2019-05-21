@@ -1,6 +1,7 @@
 package com.bomberman.zilvinasGame;
 
 import com.bomberman.entities.Position;
+
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,12 +12,14 @@ public class Game {
     private List<Player> players;
     private List<Bomb> bombs;
     private List<Wall> walls;
+    private List<BombExplosion> bombExplosions;
 
     public Game() {
         playerFactory = new PlayerFactory();
         players = new ArrayList<>();
         bombs = new ArrayList<>();
         walls = new ArrayList<>();
+        bombExplosions = new ArrayList<>();
     }
 
     public String addPlayer(String id) {
@@ -53,8 +56,8 @@ public class Game {
 
     private Player getPlayer(String playerId) {
         return players.stream()
-            .filter(x -> x.getId().equals(playerId))
-            .findFirst()
-            .orElse(null);
+                .filter(x -> x.getId().equals(playerId))
+                .findFirst()
+                .orElse(null);
     }
 }
