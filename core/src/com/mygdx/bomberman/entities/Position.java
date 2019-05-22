@@ -1,5 +1,9 @@
 package com.mygdx.bomberman.entities;
 
+import com.google.gson.Gson;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class Position {
   private final float x;
   private final float y;
@@ -20,5 +24,14 @@ public class Position {
 
   public float getY() {
     return y;
+  }
+
+  public Object toJson() {
+    try {
+      return new JSONObject(new Gson().toJson(this));
+    } catch (final JSONException e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 }

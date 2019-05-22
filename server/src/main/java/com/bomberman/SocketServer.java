@@ -1,76 +1,79 @@
 package com.bomberman;
 
-import com.bomberman.Dto.MoveDto;
-import com.bomberman.zilvinasGame.Game;
+import com.bomberman.entities.Position;
+import com.bomberman.game.Game;
 import com.corundumstudio.socketio.Configuration;
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
 
 public class SocketServer {
-    private Game game;
-    private SocketIOServer server;
+  private final Game game;
+  private SocketIOServer server;
 
-    public SocketServer(Game game) {
-        this.game = game;
+  public SocketServer(final Game game) {
+    this.game = game;
 
-        initServer();
-    }
+    initServer();
+  }
 
-    private static String getPlayerId(SocketIOClient client) {
-        return client.getSessionId().toString();
-    }
+  private static String getPlayerId(final SocketIOClient client) {
+    return client.getSessionId().toString();
+  }
 
-    private void initServer() {
-        var config = new Configuration();
-        config.setPort(5050);
+  private void initServer() {
+    final var config = new Configuration();
+    config.setPort(5050);
 
-        server = new SocketIOServer(config);
+    server = new SocketIOServer(config);
 
-        addEventListeners();
+    addEventListeners();
 
-        server.start();
-        System.out.println("socket server has started");
-    }
+    server.start();
+    System.out.println("socket server has started");
+  }
 
-    private void addEventListeners() {
-        server.addEventListener("connectNewPlayer", String.class, (client, data, ackRequest) -> {
-            var playerId = getPlayerId(client);
+  private void addEventListeners() {
+    server.addEventListener(
+        "connectNewPlayer",
+        String.class,
+        (client, data, ackRequest) -> {
+          final var playerId = getPlayerId(client);
 
-            game.addPlayer(playerId);
+          game.addPlayer(playerId);
 
-            client.sendEvent("connectNewPlayerSuccess", playerId);
-            client.sendEvent("getGameState", game.getGameState());
+          client.sendEvent("connectNewPlayerSuccess", playerId);
+          client.sendEvent("getGameState", game.getGameState());
         });
 
-        server.addEventListener(
-                "disconnectPlayer",
-                String.class,
-                (client, data, ackRequest) -> {
-                    var playerId = getPlayerId(client);
-                    game.removePlayer(playerId);
+    server.addEventListener(
+        "disconnectPlayer",
+        String.class,
+        (client, data, ackRequest) -> {
+          final var playerId = getPlayerId(client);
+          game.removePlayer(playerId);
 
-                    client.sendEvent("disconnectPlayerSuccess");
-                });
+          client.sendEvent("disconnectPlayerSuccess");
+        });
 
-        server.addEventListener(
-                "movePlayer",
-                MoveDto.class,
-                (client, moveDto, ackRequest) -> {
-                    var playerId = getPlayerId(client);
-                    game.movePlayer(playerId, moveDto.getPosition());
+    server.addEventListener(
+        "movePlayer",
+        Position.class,
+        (client, position, ackRequest) -> {
+          final var playerId = getPlayerId(client);
+          game.movePlayer(playerId, position);
 
-                    client.sendEvent("movePlayerSuccess");
-                    client.sendEvent("getGameState", game.getGameState());
-                });
+          client.sendEvent("movePlayerSuccess");
+          client.sendEvent("getGameState", game.getGameState());
+        });
 
-        server.addEventListener(
-                "placeBomb",
-                String.class,
-                (socketIOClient, data, ackRequest) -> {
-                    var playerId = getPlayerId(socketIOClient);
+    server.addEventListener(
+        "placeBomb",
+        String.class,
+        (socketIOClient, data, ackRequest) -> {
+          final var playerId = getPlayerId(socketIOClient);
 
-                    game.placeBomb(playerId);
-                    socketIOClient.sendEvent("placeBombSuccess");
-                });
-    }
+          game.placeBomb(playerId);
+          socketIOClient.sendEvent("placeBombSuccess");
+        });
+  }
 }

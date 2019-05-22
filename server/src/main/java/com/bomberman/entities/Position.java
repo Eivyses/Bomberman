@@ -41,6 +41,11 @@ public class Position {
     return Objects.hash(x, y);
   }
 
+  @Override
+  public String toString() {
+    return String.format("x: %f.2, y: %f.2", x, y);
+  }
+
   public float getX() {
     return x;
   }

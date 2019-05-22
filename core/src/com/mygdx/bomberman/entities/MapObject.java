@@ -1,17 +1,17 @@
 package com.mygdx.bomberman.entities;
 
-public abstract class MovableObject {
+public abstract class MapObject {
   private Position position;
 
-  public MovableObject() {
+  public MapObject() {
     this.position = new Position();
   }
 
-  public MovableObject(final Position position) {
+  public MapObject(final Position position) {
     this.position = position;
   }
 
-  public MovableObject(final float x, final float y) {
+  public MapObject(final float x, final float y) {
     position = new Position(x, y);
   }
 
