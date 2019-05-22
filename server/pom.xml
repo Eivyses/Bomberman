@@ -10,7 +10,7 @@
     <description>Bomberman server running on JAVA 11</description>
 
     <properties>
-        <main.class>com.bomberman.BombermanLauncher</main.class>
+        <main.class>com.bomberman.Application</main.class>
         <jdk.version>11</jdk.version>
         <jaxb.version>2.3.1</jaxb.version>
         <glassfish.corba.version>4.2.0-b004</glassfish.corba.version>
