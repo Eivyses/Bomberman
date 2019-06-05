@@ -38,12 +38,9 @@ public class Player extends MapObject implements Movable {
     final var currentOnBomb =
         gameState.getBombs().stream().filter(bomb -> !bomb.hasLeftBombZone(this.id)).findFirst();
 
-    if (currentOnBomb.isPresent()) {
-      final var bomb = currentOnBomb.get();
-      if (!Collisions.willCollide(this, position, Collections.singletonList(bomb))) {
-        bomb.setHasLeftBombZone(this.id);
-      }
-    }
+    currentOnBomb
+        .filter($bomb -> willNotCollide(position, $bomb))
+        .ifPresent($bomb -> $bomb.setHasLeftBombZone(this.id));
 
     if (Collisions.isOutOfBound(this, position)
         || Collisions.willCollide(this, position, obstacles)) {
@@ -51,6 +48,10 @@ public class Player extends MapObject implements Movable {
     }
 
     setPosition(position);
+  }
+
+  private boolean willNotCollide(final Position position, final Bomb bomb) {
+    return !Collisions.willCollide(this, position, Collections.singletonList(bomb));
   }
 
   @Override
