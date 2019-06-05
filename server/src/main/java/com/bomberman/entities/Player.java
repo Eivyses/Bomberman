@@ -3,7 +3,7 @@ package com.bomberman.entities;
 import com.bomberman.constants.MapConst;
 import com.bomberman.game.GameState;
 import com.bomberman.utils.Collisions;
-import java.util.Collection;
+
 import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -41,7 +41,7 @@ public class Player extends MapObject implements Movable {
     if (currentOnBomb.isPresent()) {
       final var bomb = currentOnBomb.get();
       if (!Collisions.willCollide(this, position, Collections.singletonList(bomb))) {
-        bomb.setHasLeftBombZone();
+        bomb.setHasLeftBombZone(this.id);
       }
     }
 

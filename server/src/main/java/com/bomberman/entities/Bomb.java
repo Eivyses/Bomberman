@@ -3,26 +3,26 @@ package com.bomberman.entities;
 import com.bomberman.constants.MapConst;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Bomb extends MapObject {
 
   private final ZonedDateTime explosionTime;
-  private final String playerId;
-  private boolean hasLeftBombZone;
+  private final List<BombPlacedZone> bombPlacedZoneList;
 
-  public Bomb(final Position position, final ZonedDateTime explosionTime, final String playerId) {
+  public Bomb(
+      final Position position, final ZonedDateTime explosionTime, final List<Player> players) {
     super(position);
-    this.playerId = playerId;
     this.explosionTime = explosionTime;
-    this.hasLeftBombZone = false;
+    bombPlacedZoneList = new ArrayList<>();
+    players.forEach(p -> bombPlacedZoneList.add(new BombPlacedZone(p.getId(), false)));
   }
 
-  public void setHasLeftBombZone() {
-    this.hasLeftBombZone = true;
-  }
-
-  public String getPlayerId() {
-    return playerId;
+  public void setHasLeftBombZone(final String playerId) {
+    final var player =
+        bombPlacedZoneList.stream().filter(bpz -> bpz.getPlayerId().equals(playerId)).findFirst();
+    player.ifPresent(BombPlacedZone::setHasLeftBombZone);
   }
 
   @Override
@@ -35,9 +35,9 @@ public class Bomb extends MapObject {
     return MapConst.TEXTURE_SIZE;
   }
 
-  public boolean hasLeftBombZone(String playerId) {
-    if (playerId.equals(this.playerId)) {
-      return hasLeftBombZone;
-    } else return true;
+  public boolean hasLeftBombZone(final String playerId) {
+    final var player =
+        bombPlacedZoneList.stream().filter(bpz -> bpz.getPlayerId().equals(playerId)).findFirst();
+    return player.map(BombPlacedZone::hasLeftBombZone).orElse(true);
   }
 }
