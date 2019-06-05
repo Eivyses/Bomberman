@@ -20,7 +20,7 @@ public class SocketClient {
   }
 
   public void move(final float x, final float y) {
-    final var position = new Position(x, y);
+    final Position position = new Position(x, y);
     socket.emit("movePlayer", position.toJson());
   }
 
@@ -52,14 +52,14 @@ public class SocketClient {
         .on(
             "connectNewPlayerSuccess",
             args -> {
-              var playerId = new Gson().fromJson(args[0].toString(), String.class);
+              String playerId = new Gson().fromJson(args[0].toString(), String.class);
               game.setPlayerId(playerId);
             })
         .on(
             "getGameState",
             args -> {
               //                            System.out.println("Get game state");
-              final var gameState = new Gson().fromJson(args[0].toString(), GameState.class);
+              final GameState gameState = new Gson().fromJson(args[0].toString(), GameState.class);
               game.setGameState(gameState);
             });
     // get player object for new player

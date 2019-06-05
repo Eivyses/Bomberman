@@ -53,8 +53,8 @@ public class Drawer {
   }
 
   private void drawWall(final Wall wall) {
-    final var x = wall.getPosition().getX();
-    final var y = wall.getPosition().getY();
+    final float x = wall.getPosition().getX();
+    final float y = wall.getPosition().getY();
     batch.draw(wallTexture, x, y);
   }
 

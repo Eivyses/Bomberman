@@ -6,6 +6,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.bomberman.entities.FrameRate;
+import com.mygdx.bomberman.entities.Player;
 import com.mygdx.bomberman.game.Drawer;
 import com.mygdx.bomberman.game.Game;
 import com.mygdx.bomberman.game.SocketClient;
@@ -33,10 +34,10 @@ public class Bomberman extends ApplicationAdapter {
   public void render() {
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-    final var player = game.getCurrentPlayer();
-    final var speed = 120f;
+    final Player player = game.getCurrentPlayer();
+    final float speed = 120f;
 
-    final var dt = Gdx.graphics.getDeltaTime();
+    final float dt = Gdx.graphics.getDeltaTime();
     if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
       socketClient.move(player.getPosition().getX(), player.getPosition().getY() + dt * speed);
     }
