@@ -37,6 +37,7 @@ public class GameState {
   }
 
   public List<MapObject> getObstacles() {
-    return Stream.concat(walls.stream(), bombs.stream()).collect(Collectors.toList());
+    return new ArrayList<>(walls);
+//    return Stream.concat(walls.stream(), bombs.stream()).collect(Collectors.toList());
   }
 }

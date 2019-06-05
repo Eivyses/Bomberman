@@ -7,10 +7,22 @@ import java.time.ZonedDateTime;
 public class Bomb extends MapObject {
 
   private final ZonedDateTime explosionTime;
+  private final String playerId;
+  private boolean hasLeftBombZone;
 
-  public Bomb(final Position position, final ZonedDateTime explosionTime) {
+  public Bomb(final Position position, final ZonedDateTime explosionTime, final String playerId) {
     super(position);
+    this.playerId = playerId;
     this.explosionTime = explosionTime;
+    this.hasLeftBombZone = false;
+  }
+
+  public void setHasLeftBombZone() {
+    this.hasLeftBombZone = true;
+  }
+
+  public String getPlayerId() {
+    return playerId;
   }
 
   @Override
@@ -21,5 +33,11 @@ public class Bomb extends MapObject {
   @Override
   public int getTextureHeight() {
     return MapConst.TEXTURE_SIZE;
+  }
+
+  public boolean hasLeftBombZone(String playerId) {
+    if (playerId.equals(this.playerId)) {
+      return hasLeftBombZone;
+    } else return true;
   }
 }

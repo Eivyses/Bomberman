@@ -1,13 +1,17 @@
 package com.bomberman.game;
 
 import com.bomberman.entities.Bomb;
+import com.bomberman.entities.MapObject;
 import com.bomberman.entities.Player;
 import com.bomberman.entities.Position;
 import com.bomberman.entities.Wall;
 import com.bomberman.factories.LevelFactory;
 import com.bomberman.factories.PlayerFactory;
 
+import com.bomberman.utils.Collisions;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class Game {
 
@@ -44,10 +48,14 @@ public class Game {
     final var currentTime = ZonedDateTime.now();
     final var player = getPlayer(playerId);
     final var bombDurationInSeconds = player.getBombDurationInSeconds();
-    final var position = player.getPosition();
+    final var position = Position.round(player.getPosition());
     final var explosionTime = currentTime.plusSeconds(bombDurationInSeconds);
-
-    gameState.getBombs().add(new Bomb(position, explosionTime));
+    final var bomb = new Bomb(position, explosionTime, playerId);
+    if (Collisions.willCollide(bomb, position, new ArrayList<>(gameState.getBombs()))) {
+      return;
+    }
+    gameState.getBombs().add(bomb);
+    System.out.println("Bomb placed at " + position.toString());
   }
 
   public void initGame() {

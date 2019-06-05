@@ -42,7 +42,7 @@ public class SocketServer {
           game.addPlayer(playerId);
 
           client.sendEvent("connectNewPlayerSuccess", playerId);
-          client.sendEvent("getGameState", game.getGameState());
+          server.getBroadcastOperations().sendEvent("getGameState", game.getGameState());
         });
 
     server.addEventListener(
@@ -63,17 +63,18 @@ public class SocketServer {
           game.movePlayer(playerId, position);
 
           client.sendEvent("movePlayerSuccess");
-          client.sendEvent("getGameState", game.getGameState());
+          server.getBroadcastOperations().sendEvent("getGameState", game.getGameState());
         });
 
     server.addEventListener(
         "placeBomb",
         String.class,
-        (socketIOClient, data, ackRequest) -> {
-          final var playerId = getPlayerId(socketIOClient);
+        (client, data, ackRequest) -> {
+          final var playerId = getPlayerId(client);
 
           game.placeBomb(playerId);
-          socketIOClient.sendEvent("placeBombSuccess");
+          client.sendEvent("placeBombSuccess");
+          server.getBroadcastOperations().sendEvent("getGameState", game.getGameState());
         });
   }
 }

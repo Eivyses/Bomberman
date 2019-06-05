@@ -5,6 +5,7 @@ import com.bomberman.entities.MapObject;
 import com.bomberman.entities.Position;
 
 import java.util.List;
+import java.util.Objects;
 
 public class Collisions {
 
@@ -21,27 +22,31 @@ public class Collisions {
   private static boolean collides(
       final MapObject movableObject, final Position newPosition, final MapObject obstacle) {
 
-    final Position playerBotLeftPos = newPosition;
-    final Position playerTopRightPos =
+    if (Objects.equals(newPosition, obstacle.getPosition())) {
+      return true;
+    }
+
+    final Position objectBotLeftPos = newPosition;
+    final Position objectTopRightPos =
         new Position(
             newPosition.getX() + movableObject.getTextureWidth(),
             newPosition.getY() + movableObject.getTextureHeight());
-    final Position playerTopLefttPos =
+    final Position objectTopLefttPos =
         new Position(newPosition.getX(), newPosition.getY() + movableObject.getTextureHeight());
-    final Position playerBotRightPos =
+    final Position objectBotRightPos =
         new Position(newPosition.getX() + movableObject.getTextureWidth(), newPosition.getY());
 
-    return collides(playerBotLeftPos, obstacle)
-        || collides(playerTopRightPos, obstacle)
-        || collides(playerTopLefttPos, obstacle)
-        || collides(playerBotRightPos, obstacle);
+    return collides(objectBotLeftPos, obstacle)
+        || collides(objectTopRightPos, obstacle)
+        || collides(objectTopLefttPos, obstacle)
+        || collides(objectBotRightPos, obstacle);
   }
 
-  private static boolean collides(final Position playerPosition, final MapObject obstacle) {
+  private static boolean collides(final Position objectPosition, final MapObject obstacle) {
 
-    return playerPosition.getX() >= obstacle.getPosition().getX()
-        && playerPosition.getX() <= obstacle.getUpperCorner().getX()
-        && playerPosition.getY() >= obstacle.getPosition().getY()
-        && playerPosition.getY() <= obstacle.getUpperCorner().getY();
+    return objectPosition.getX() > obstacle.getPosition().getX()
+        && objectPosition.getX() < obstacle.getUpperCorner().getX()
+        && objectPosition.getY() > obstacle.getPosition().getY()
+        && objectPosition.getY() < obstacle.getUpperCorner().getY();
   }
 }
