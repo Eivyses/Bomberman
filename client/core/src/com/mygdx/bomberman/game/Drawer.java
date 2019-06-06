@@ -3,14 +3,15 @@ package com.mygdx.bomberman.game;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.bomberman.entities.Bomb;
+import com.mygdx.bomberman.entities.BombExplosion;
 import com.mygdx.bomberman.entities.Player;
 import com.mygdx.bomberman.entities.Wall;
-
 import java.util.List;
 
 public class Drawer {
   private final Texture bluePlayer;
   private final Texture bombTexture;
+  private final Texture bombExplosionTexture;
   private final Texture wallTexture;
   private final Texture terrainTexture;
 
@@ -21,12 +22,14 @@ public class Drawer {
 
     bluePlayer = new Texture("textures\\Bomberman.png");
     bombTexture = new Texture("textures\\Bomb.png");
+    bombExplosionTexture = new Texture("textures\\Explosion.png");
     wallTexture = new Texture("textures\\Wall.png");
     terrainTexture = new Texture("textures\\Terrain.png");
   }
 
   public void drawGame(final GameState gameState) {
     drawTerrain();
+    drawExplosions(gameState.getBombExplosions());
     drawWalls(gameState.getWalls());
     drawBombs(gameState.getBombs());
     drawPlayers(gameState.getPlayers());
@@ -34,6 +37,15 @@ public class Drawer {
 
   private void drawPlayers(final List<Player> players) {
     players.forEach(this::drawPlayer);
+  }
+
+  private void drawExplosions(final List<BombExplosion> explosions) {
+    explosions.forEach(this::drawExplosion);
+  }
+
+  private void drawExplosion(final BombExplosion explosion) {
+    batch.draw(
+        bombExplosionTexture, explosion.getPosition().getX(), explosion.getPosition().getY());
   }
 
   private void drawPlayer(final Player player) {

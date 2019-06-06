@@ -69,20 +69,33 @@ public class SocketServer {
         String.class,
         (client, data, ackRequest) -> {
           final var playerId = getPlayerId(client);
-          var bomb = game.placeBomb(playerId);
+          final var bomb = game.placeBomb(playerId);
           server.getBroadcastOperations().sendEvent("getGameState", game.getGameState());
           bomb.ifPresent(this::setBombExplosion);
         });
   }
 
-  private void setBombExplosion(Bomb bomb) {
+  private void setBombExplosion(final Bomb bomb) {
     final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
     executor.schedule(
         () -> {
-          game.explodeBomb(bomb);
+          game.explodeBomb(bomb, bomb.getBombId(), bomb.getPlayerId());
+          game.checkKilled(bomb);
+          removeBombExplosion(bomb);
           server.getBroadcastOperations().sendEvent("getGameState", game.getGameState());
         },
         3,
+        TimeUnit.SECONDS);
+  }
+
+  private void removeBombExplosion(final Bomb bomb) {
+    final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
+    executor.schedule(
+        () -> {
+          game.removeExplosions(bomb);
+          server.getBroadcastOperations().sendEvent("getGameState", game.getGameState());
+        },
+        2,
         TimeUnit.SECONDS);
   }
 }

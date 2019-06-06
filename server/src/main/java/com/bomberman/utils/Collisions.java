@@ -3,11 +3,90 @@ package com.bomberman.utils;
 import com.bomberman.constants.MapConst;
 import com.bomberman.entities.MapObject;
 import com.bomberman.entities.Position;
-
+import com.bomberman.game.GameState;
 import java.util.List;
 import java.util.Objects;
 
 public class Collisions {
+
+  // TODO: refactor this fiesta
+  public static boolean isInExplosionRange(
+      final int range,
+      final MapObject fromObject,
+      final MapObject toObject,
+      final GameState gameState) {
+    for (int x = 1; x <= range; x++) {
+      final var position =
+          new Position(
+              fromObject.getPosition().getX() + (x * fromObject.getTextureWidth()),
+              fromObject.getPosition().getY());
+      final boolean willHitWall =
+          gameState.getWalls().stream()
+              .anyMatch(wall -> Collisions.isAtSameSquare(wall.getPosition(), position));
+      if (willHitWall) {
+        break;
+      }
+
+      if (isAtSameSquare(position, toObject.getPosition())) {
+        return true;
+      }
+    }
+    for (int x = 1; x <= range; x++) {
+      final var position =
+          new Position(
+              fromObject.getPosition().getX() - (x * fromObject.getTextureWidth()),
+              fromObject.getPosition().getY());
+
+      final boolean willHitWall =
+          gameState.getWalls().stream()
+              .anyMatch(wall -> Collisions.isAtSameSquare(wall.getPosition(), position));
+      if (willHitWall) {
+        break;
+      }
+
+      if (isAtSameSquare(position, toObject.getPosition())) {
+        return true;
+      }
+    }
+
+    for (int y = 1; y <= range; y++) {
+      final var position =
+          new Position(
+              fromObject.getPosition().getX(),
+              fromObject.getPosition().getY() + (y * fromObject.getTextureHeight()));
+
+      final boolean willHitWall =
+          gameState.getWalls().stream()
+              .anyMatch(wall -> Collisions.isAtSameSquare(wall.getPosition(), position));
+      if (willHitWall) {
+        break;
+      }
+
+      if (isAtSameSquare(position, toObject.getPosition())) {
+        return true;
+      }
+    }
+    for (int y = 1; y <= range; y++) {
+
+      final var position =
+          new Position(
+              fromObject.getPosition().getX(),
+              fromObject.getPosition().getY() - (y * fromObject.getTextureHeight()));
+
+      final boolean willHitWall =
+          gameState.getWalls().stream()
+              .anyMatch(wall -> Collisions.isAtSameSquare(wall.getPosition(), position));
+      if (willHitWall) {
+        break;
+      }
+
+      if (isAtSameSquare(position, toObject.getPosition())) {
+        return true;
+      }
+    }
+
+    return false;
+  }
 
   public static boolean isOutOfBound(final MapObject mapObject, final Position newPosition) {
     return newPosition.getX() + mapObject.getTextureWidth() > MapConst.MAP_WIDTH
@@ -16,10 +95,10 @@ public class Collisions {
 
   public static boolean willCollide(
       final MapObject mapObject, final Position newPosition, final List<MapObject> obstacles) {
-    return obstacles.stream().anyMatch($obstacle -> collides(mapObject, newPosition, $obstacle));
+    return obstacles.stream().anyMatch($obstacle -> willCollide(mapObject, newPosition, $obstacle));
   }
 
-  private static boolean collides(
+  public static boolean willCollide(
       final MapObject movableObject, final Position newPosition, final MapObject obstacle) {
 
     if (Objects.equals(newPosition, obstacle.getPosition())) {
@@ -36,17 +115,21 @@ public class Collisions {
     final Position objectBotRightPos =
         new Position(newPosition.getX() + movableObject.getTextureWidth(), newPosition.getY());
 
-    return collides(objectBotLeftPos, obstacle)
-        || collides(objectTopRightPos, obstacle)
-        || collides(objectTopLefttPos, obstacle)
-        || collides(objectBotRightPos, obstacle);
+    return willCollide(objectBotLeftPos, obstacle)
+        || willCollide(objectTopRightPos, obstacle)
+        || willCollide(objectTopLefttPos, obstacle)
+        || willCollide(objectBotRightPos, obstacle);
   }
 
-  private static boolean collides(final Position objectPosition, final MapObject obstacle) {
-
+  private static boolean willCollide(final Position objectPosition, final MapObject obstacle) {
     return objectPosition.getX() > obstacle.getPosition().getX()
         && objectPosition.getX() < obstacle.getUpperCorner().getX()
         && objectPosition.getY() > obstacle.getPosition().getY()
         && objectPosition.getY() < obstacle.getUpperCorner().getY();
+  }
+
+  public static boolean isAtSameSquare(
+      final Position firstPosition, final Position secondPosition) {
+    return Objects.equals(firstPosition, secondPosition);
   }
 }
