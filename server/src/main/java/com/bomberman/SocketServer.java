@@ -1,10 +1,13 @@
 package com.bomberman;
 
+import com.bomberman.entities.Bomb;
 import com.bomberman.entities.Position;
 import com.bomberman.game.Game;
 import com.corundumstudio.socketio.Configuration;
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class SocketServer {
   private final Game game;
@@ -38,9 +41,7 @@ public class SocketServer {
         String.class,
         (client, data, ackRequest) -> {
           final var playerId = getPlayerId(client);
-
           game.addPlayer(playerId);
-
           client.sendEvent("connectNewPlayerSuccess", playerId);
           server.getBroadcastOperations().sendEvent("getGameState", game.getGameState());
         });
@@ -51,7 +52,6 @@ public class SocketServer {
         (client, data, ackRequest) -> {
           final var playerId = getPlayerId(client);
           game.removePlayer(playerId);
-
           client.sendEvent("disconnectPlayerSuccess");
         });
 
@@ -61,8 +61,6 @@ public class SocketServer {
         (client, position, ackRequest) -> {
           final var playerId = getPlayerId(client);
           game.movePlayer(playerId, position);
-
-          client.sendEvent("movePlayerSuccess");
           server.getBroadcastOperations().sendEvent("getGameState", game.getGameState());
         });
 
@@ -71,10 +69,20 @@ public class SocketServer {
         String.class,
         (client, data, ackRequest) -> {
           final var playerId = getPlayerId(client);
-
-          game.placeBomb(playerId);
-          client.sendEvent("placeBombSuccess");
+          var bomb = game.placeBomb(playerId);
           server.getBroadcastOperations().sendEvent("getGameState", game.getGameState());
+          bomb.ifPresent(this::setBombExplosion);
         });
+  }
+
+  private void setBombExplosion(Bomb bomb) {
+    final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
+    executor.schedule(
+        () -> {
+          game.explodeBomb(bomb);
+          server.getBroadcastOperations().sendEvent("getGameState", game.getGameState());
+        },
+        3,
+        TimeUnit.SECONDS);
   }
 }

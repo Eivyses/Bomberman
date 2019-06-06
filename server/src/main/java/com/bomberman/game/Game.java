@@ -7,9 +7,9 @@ import com.bomberman.entities.Wall;
 import com.bomberman.factories.LevelFactory;
 import com.bomberman.factories.PlayerFactory;
 import com.bomberman.utils.Collisions;
-
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class Game {
 
@@ -42,18 +42,23 @@ public class Game {
     player.ifPresent(value -> value.move(position));
   }
 
-  public void placeBomb(final String playerId) {
+  public Optional<Bomb> placeBomb(final String playerId) {
     final var currentTime = ZonedDateTime.now();
     final var player = getPlayer(playerId);
     final var bombDurationInSeconds = player.getBombDurationInSeconds();
     final var position = Position.round(player.getPosition());
     final var explosionTime = currentTime.plusSeconds(bombDurationInSeconds);
-    final var bomb = new Bomb(position, explosionTime, this.gameState.getPlayers());
+    final var bomb = new Bomb(position, explosionTime, gameState.getPlayers());
     if (Collisions.willCollide(bomb, position, new ArrayList<>(gameState.getBombs()))) {
-      return;
+      return Optional.empty();
     }
     gameState.getBombs().add(bomb);
     System.out.println("Bomb placed at " + position.toString());
+    return Optional.of(bomb);
+  }
+
+  public void explodeBomb(final Bomb bomb) {
+    gameState.getBombs().remove(bomb);
   }
 
   public void initGame() {
