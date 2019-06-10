@@ -23,6 +23,10 @@ public class SocketClient {
     socket.emit("movePlayer", position.toJson());
   }
 
+  public void respawnPlayer() {
+    socket.emit("respawnPlayer");
+  }
+
   public void placeBomb() {
     socket.emit("placeBomb");
   }

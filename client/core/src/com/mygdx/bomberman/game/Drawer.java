@@ -49,7 +49,11 @@ public class Drawer {
   }
 
   private void drawPlayer(final Player player) {
-    batch.draw(bluePlayer, player.getPosition().getX(), player.getPosition().getY());
+    if (player.isDead()) {
+      batch.draw(bombExplosionTexture, player.getPosition().getX(), player.getPosition().getY());
+    } else {
+      batch.draw(bluePlayer, player.getPosition().getX(), player.getPosition().getY());
+    }
   }
 
   private void drawBombs(final List<Bomb> bombs) {

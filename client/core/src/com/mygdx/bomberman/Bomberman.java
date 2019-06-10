@@ -3,9 +3,12 @@ package com.mygdx.bomberman;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.mygdx.bomberman.entities.FrameRate;
+import com.mygdx.bomberman.drawings.FrameRate;
+import com.mygdx.bomberman.drawings.ScoreBoard;
+import com.mygdx.bomberman.drawings.TextDrawable;
 import com.mygdx.bomberman.entities.Player;
 import com.mygdx.bomberman.game.Drawer;
 import com.mygdx.bomberman.game.Game;
@@ -17,7 +20,8 @@ public class Bomberman extends ApplicationAdapter {
   private Drawer drawer;
 
   private SpriteBatch batch;
-  private FrameRate frameRate;
+  private TextDrawable frameRate;
+  private ScoreBoard scoreBoard;
 
   @Override
   public void create() {
@@ -25,6 +29,8 @@ public class Bomberman extends ApplicationAdapter {
     frameRate = new FrameRate(batch);
 
     game = new Game();
+    scoreBoard = new ScoreBoard(batch);
+
     drawer = new Drawer(batch);
 
     socketClient = new SocketClient(game);
@@ -38,6 +44,11 @@ public class Bomberman extends ApplicationAdapter {
     final float speed = 120f;
 
     final float dt = Gdx.graphics.getDeltaTime();
+
+    if (Gdx.input.isKeyJustPressed(Keys.R)) {
+      socketClient.respawnPlayer();
+    }
+
     if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
       socketClient.move(player.getPosition().getX(), player.getPosition().getY() + dt * speed);
     }
@@ -74,8 +85,9 @@ public class Bomberman extends ApplicationAdapter {
 
     drawer.drawGame(game.getGameState());
 
-    frameRate.update();
-    frameRate.draw();
+    frameRate.updateAndDraw();
+    scoreBoard.setPlayers(game.getGameState().getPlayers());
+    scoreBoard.updateAndDraw();
 
     batch.end();
   }
