@@ -12,6 +12,7 @@ import com.bomberman.utils.Collisions;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -40,30 +41,32 @@ public class Game {
   }
 
   public void movePlayer(final String playerId, final Position position) {
-    final var player =
+    final var playerOptional =
         gameState.getPlayers().stream().filter(x -> x.getId().equals(playerId)).findFirst();
 
-    if (player.isPresent()) {
-      player.get().move(position);
-      if (movedOnBomb(player.get())) {
-        // TODO: kill
+    if (playerOptional.isPresent()) {
+      final var player = playerOptional.get();
+      if (player.isDead()) {
+        return;
       }
+      player.move(position);
+
+      final var explosion =
+          gameState.getBombExplosions().stream()
+              .filter(
+                  $explosion -> Collisions.willCollide(player, player.getPosition(), $explosion))
+              .findFirst();
+
+      explosion.ifPresent($explosion -> updateDeathsAndScore($explosion.getPlayerId(), player));
     }
   }
 
-  public boolean movedOnBomb(final Player player) {
-    final var explosion =
-        gameState.getBombExplosions().stream()
-            .filter($explosion -> Collisions.willCollide(player, player.getPosition(), $explosion))
+  private void updateDeathsAndScore(final String killerId, final Player player) {
+    final var killerOptional =
+        gameState.getPlayers().stream()
+            .filter($player -> $player.getId().equals(killerId))
             .findFirst();
-
-    if (explosion.isPresent()) {
-      System.out.println(
-          String.format(
-              "Player %s died from player %s", player.getId(), explosion.get().getPlayerId()));
-      return true;
-    }
-    return false;
+    killerOptional.ifPresent($killer -> updateDeathsAndScore($killer, player));
   }
 
   public Optional<Bomb> placeBomb(final String playerId) {
@@ -113,10 +116,24 @@ public class Game {
             .findFirst()
             .orElseThrow();
 
-    playersInExplosionRange.forEach(
-        $player ->
-            System.out.println(
-                String.format("Player %s died from player %s", $player.getId(), killer.getId())));
+    playersInExplosionRange.forEach($player -> updateDeathsAndScore(killer, $player));
+  }
+
+  private void updateDeathsAndScore(final Player killer, final Player killed) {
+    if (killed.isDead()) {
+      return;
+    }
+
+    if (Objects.equals(killer, killed)) {
+      killer.killedHimself();
+      killer.setDead();
+      System.out.println(String.format("Player %s killed himself", killer.getId()));
+    } else {
+      killer.killedEnemy();
+      killed.setDead();
+      System.out.println(
+          String.format("Player %s died from player %s", killed.getId(), killer.getId()));
+    }
   }
 
   public void removeExplosions(final Bomb bomb) {
@@ -141,5 +158,12 @@ public class Game {
 
   public GameState getGameState() {
     return gameState;
+  }
+
+  public void respawnPlayer(final String playerId) {
+    final var playerOptional =
+        gameState.getPlayers().stream().filter(x -> x.getId().equals(playerId)).findFirst();
+
+    playerOptional.ifPresent(Player::respawn);
   }
 }

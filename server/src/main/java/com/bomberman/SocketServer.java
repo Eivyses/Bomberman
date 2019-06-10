@@ -53,6 +53,7 @@ public class SocketServer {
           final var playerId = getPlayerId(client);
           game.removePlayer(playerId);
           client.sendEvent("disconnectPlayerSuccess");
+          server.getBroadcastOperations().sendEvent("getGameState", game.getGameState());
         });
 
     server.addEventListener(
@@ -72,6 +73,15 @@ public class SocketServer {
           final var bomb = game.placeBomb(playerId);
           server.getBroadcastOperations().sendEvent("getGameState", game.getGameState());
           bomb.ifPresent(this::setBombExplosion);
+        });
+
+    server.addEventListener(
+        "respawnPlayer",
+        String.class,
+        (client, data, ackRequest) -> {
+          final var playerId = getPlayerId(client);
+          game.respawnPlayer(playerId);
+          server.getBroadcastOperations().sendEvent("getGameState", game.getGameState());
         });
   }
 
@@ -95,7 +105,7 @@ public class SocketServer {
           game.removeExplosions(bomb);
           server.getBroadcastOperations().sendEvent("getGameState", game.getGameState());
         },
-        2,
+        1,
         TimeUnit.SECONDS);
   }
 }

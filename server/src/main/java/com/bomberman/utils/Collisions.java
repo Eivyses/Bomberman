@@ -9,69 +9,51 @@ import java.util.Objects;
 
 public class Collisions {
 
-  // TODO: refactor this fiesta
   public static boolean isInExplosionRange(
       final int range,
       final MapObject fromObject,
       final MapObject toObject,
       final GameState gameState) {
-    for (int x = 1; x <= range; x++) {
-      final var position =
-          new Position(
-              fromObject.getPosition().getX() + (x * fromObject.getTextureWidth()),
-              fromObject.getPosition().getY());
-      final boolean willHitWall =
-          gameState.getWalls().stream()
-              .anyMatch(wall -> Collisions.isAtSameSquare(wall.getPosition(), position));
-      if (willHitWall) {
-        break;
-      }
 
-      if (isAtSameSquare(position, toObject.getPosition())) {
-        return true;
-      }
+    if (isInExplosionRange(range, fromObject, toObject, gameState, true, true)) {
+      return true;
     }
-    for (int x = 1; x <= range; x++) {
-      final var position =
-          new Position(
-              fromObject.getPosition().getX() - (x * fromObject.getTextureWidth()),
-              fromObject.getPosition().getY());
-
-      final boolean willHitWall =
-          gameState.getWalls().stream()
-              .anyMatch(wall -> Collisions.isAtSameSquare(wall.getPosition(), position));
-      if (willHitWall) {
-        break;
-      }
-
-      if (isAtSameSquare(position, toObject.getPosition())) {
-        return true;
-      }
+    if (isInExplosionRange(range, fromObject, toObject, gameState, false, true)) {
+      return true;
     }
-
-    for (int y = 1; y <= range; y++) {
-      final var position =
-          new Position(
-              fromObject.getPosition().getX(),
-              fromObject.getPosition().getY() + (y * fromObject.getTextureHeight()));
-
-      final boolean willHitWall =
-          gameState.getWalls().stream()
-              .anyMatch(wall -> Collisions.isAtSameSquare(wall.getPosition(), position));
-      if (willHitWall) {
-        break;
-      }
-
-      if (isAtSameSquare(position, toObject.getPosition())) {
-        return true;
-      }
+    if (isInExplosionRange(range, fromObject, toObject, gameState, true, false)) {
+      return true;
     }
-    for (int y = 1; y <= range; y++) {
+    return isInExplosionRange(range, fromObject, toObject, gameState, false, false);
+  }
 
-      final var position =
-          new Position(
-              fromObject.getPosition().getX(),
-              fromObject.getPosition().getY() - (y * fromObject.getTextureHeight()));
+  private static boolean isInExplosionRange(
+      final int range,
+      final MapObject fromObject,
+      final MapObject toObject,
+      final GameState gameState,
+      final boolean lower,
+      final boolean xAxis) {
+    for (int i = 1; i <= range; i++) {
+      final float xPos;
+      final float yPos;
+      if (xAxis) {
+        yPos = fromObject.getPosition().getY();
+        if (lower) {
+          xPos = fromObject.getPosition().getX() - (i * fromObject.getTextureWidth());
+        } else {
+          xPos = fromObject.getPosition().getX() + (i * fromObject.getTextureWidth());
+        }
+      } else {
+        xPos = fromObject.getPosition().getX();
+        if (lower) {
+          yPos = fromObject.getPosition().getY() - (i * fromObject.getTextureHeight());
+        } else {
+          yPos = fromObject.getPosition().getY() + (i * fromObject.getTextureHeight());
+        }
+      }
+
+      final var position = new Position(xPos, yPos);
 
       final boolean willHitWall =
           gameState.getWalls().stream()
@@ -84,7 +66,6 @@ public class Collisions {
         return true;
       }
     }
-
     return false;
   }
 

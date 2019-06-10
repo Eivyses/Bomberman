@@ -14,6 +14,8 @@ public class Player extends MapObject implements Movable {
   private final float speed;
   private final int bombRagne;
   private final GameState gameState;
+  private boolean dead;
+  private int killCount;
 
   public Player(final String id, final Position position, final GameState gameState) {
     super(position);
@@ -21,10 +23,38 @@ public class Player extends MapObject implements Movable {
     this.gameState = gameState;
     speed = 120f;
     bombRagne = 2;
+    dead = false;
+    killCount = 0;
   }
 
   public String getId() {
     return id;
+  }
+
+  public boolean isDead() {
+    return dead;
+  }
+
+  public void setDead() {
+    dead = true;
+  }
+
+  public void respawn() {
+    setPosition(new Position(0, 0));
+    dead = false;
+    System.out.println(String.format("Player %s resurrected", id));
+  }
+
+  public int getKillCount() {
+    return killCount;
+  }
+
+  public void killedEnemy() {
+    killCount++;
+  }
+
+  public void killedHimself() {
+    killCount--;
   }
 
   public int getBombDurationInSeconds() {
