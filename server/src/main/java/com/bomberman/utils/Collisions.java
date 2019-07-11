@@ -4,6 +4,7 @@ import com.bomberman.constants.MapConst;
 import com.bomberman.entities.MapObject;
 import com.bomberman.entities.Position;
 import com.bomberman.game.GameState;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -32,21 +33,21 @@ public class Collisions {
       final MapObject fromObject,
       final MapObject toObject,
       final GameState gameState,
-      final boolean lower,
+      final boolean isDirectionDown,
       final boolean xAxis) {
     for (int i = 1; i <= range; i++) {
       final float xPos;
       final float yPos;
       if (xAxis) {
         yPos = fromObject.getPosition().getY();
-        if (lower) {
+        if (isDirectionDown) {
           xPos = fromObject.getPosition().getX() - (i * fromObject.getTextureWidth());
         } else {
           xPos = fromObject.getPosition().getX() + (i * fromObject.getTextureWidth());
         }
       } else {
         xPos = fromObject.getPosition().getX();
-        if (lower) {
+        if (isDirectionDown) {
           yPos = fromObject.getPosition().getY() - (i * fromObject.getTextureHeight());
         } else {
           yPos = fromObject.getPosition().getY() + (i * fromObject.getTextureHeight());
@@ -86,27 +87,22 @@ public class Collisions {
       return true;
     }
 
-    final Position objectBotLeftPos = newPosition;
-    final Position objectTopRightPos =
-        new Position(
-            newPosition.getX() + movableObject.getTextureWidth(),
-            newPosition.getY() + movableObject.getTextureHeight());
-    final Position objectTopLefttPos =
-        new Position(newPosition.getX(), newPosition.getY() + movableObject.getTextureHeight());
-    final Position objectBotRightPos =
-        new Position(newPosition.getX() + movableObject.getTextureWidth(), newPosition.getY());
+    final Position l1 = newPosition.getTopLeft(movableObject);
+    final Position r1 = newPosition.getBotRight(movableObject);
+    final Position l2 = obstacle.getTopLeft();
+    final Position r2 = obstacle.getBotRight();
 
-    return willCollide(objectBotLeftPos, obstacle)
-        || willCollide(objectTopRightPos, obstacle)
-        || willCollide(objectTopLefttPos, obstacle)
-        || willCollide(objectBotRightPos, obstacle);
-  }
+    // If one rectangle is on left side of other
+    if (l1.getX() > r2.getX() || l2.getX() > r1.getX()) {
+      return false;
+    }
 
-  private static boolean willCollide(final Position objectPosition, final MapObject obstacle) {
-    return objectPosition.getX() > obstacle.getPosition().getX()
-        && objectPosition.getX() < obstacle.getUpperCorner().getX()
-        && objectPosition.getY() > obstacle.getPosition().getY()
-        && objectPosition.getY() < obstacle.getUpperCorner().getY();
+    // If one rectangle is above other
+    if (l1.getY() < r2.getY() || l2.getY() < r1.getY()) {
+      return false;
+    }
+
+    return true;
   }
 
   public static boolean isAtSameSquare(

@@ -23,8 +23,12 @@ public abstract class MapObject {
     this.position = position;
   }
 
-  public Position getUpperCorner() {
-    return new Position(position.getX() + getTextureWidth(), position.getY() + getTextureHeight());
+  public Position getTopLeft() {
+    return new Position(position.getX(), position.getY() + getTextureHeight());
+  }
+
+  public Position getBotRight() {
+    return new Position(position.getX() + getTextureWidth(), position.getY());
   }
 
   public abstract int getTextureWidth();

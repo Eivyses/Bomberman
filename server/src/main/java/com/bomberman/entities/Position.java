@@ -19,6 +19,14 @@ public class Position {
     return new Position(xPos, yPos);
   }
 
+  public Position getTopLeft(final MapObject mapObject) {
+    return new Position(x, y + mapObject.getTextureHeight());
+  }
+
+  public Position getBotRight(final MapObject mapObject) {
+    return new Position(x + mapObject.getTextureWidth(), y);
+  }
+
   public Position() {
     this.x = 0f;
     this.y = 0f;
