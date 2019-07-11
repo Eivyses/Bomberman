@@ -22,6 +22,7 @@ public class Bomberman extends ApplicationAdapter {
   private SpriteBatch batch;
   private TextDrawable frameRate;
   private ScoreBoard scoreBoard;
+  private float stateTime;
 
   @Override
   public void create() {
@@ -34,6 +35,8 @@ public class Bomberman extends ApplicationAdapter {
     drawer = new Drawer(batch);
 
     socketClient = new SocketClient(game);
+
+    stateTime = 0f;
   }
 
   @Override
@@ -44,6 +47,7 @@ public class Bomberman extends ApplicationAdapter {
     final float speed = 120f;
 
     final float dt = Gdx.graphics.getDeltaTime();
+    stateTime += dt;
 
     if (Gdx.input.isKeyJustPressed(Keys.R)) {
       socketClient.respawnPlayer();
@@ -83,7 +87,7 @@ public class Bomberman extends ApplicationAdapter {
 
     batch.begin();
 
-    drawer.drawGame(game.getGameState());
+    drawer.drawGame(game.getGameState(), stateTime);
 
     frameRate.updateAndDraw();
     scoreBoard.setPlayers(game.getGameState().getPlayers());
