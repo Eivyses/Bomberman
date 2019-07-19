@@ -10,25 +10,32 @@ import java.util.stream.Stream;
 public class Player extends MapObject implements Movable {
 
   private final String id;
-  private final int bombDurationInSeconds = 3;
+  private final int bombDurationInSeconds;
   private final float speed;
-  private final int bombRagne;
+  private final int bombRange;
   private final GameState gameState;
   private boolean dead;
   private int killCount;
+  private float stateTime;
 
   public Player(final String id, final Position position, final GameState gameState) {
     super(position);
     this.id = id;
     this.gameState = gameState;
     speed = 120f;
-    bombRagne = 2;
+    bombRange = 2;
+    bombDurationInSeconds = 3;
     dead = false;
     killCount = 0;
+    stateTime = 0f;
   }
 
   public String getId() {
     return id;
+  }
+
+  public float getSpeed() {
+    return speed;
   }
 
   public boolean isDead() {
@@ -37,6 +44,14 @@ public class Player extends MapObject implements Movable {
 
   public void setDead() {
     dead = true;
+  }
+
+  public float getStateTime() {
+    return stateTime;
+  }
+
+  public void addStateTime(final float stateTime) {
+    this.stateTime += stateTime;
   }
 
   public void respawn() {
@@ -87,8 +102,8 @@ public class Player extends MapObject implements Movable {
     return !Collisions.willCollide(this, position, Collections.singletonList(bomb));
   }
 
-  public int getBombRagne() {
-    return bombRagne;
+  int getBombRange() {
+    return bombRange;
   }
 
   @Override

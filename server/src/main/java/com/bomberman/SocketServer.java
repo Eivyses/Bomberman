@@ -1,7 +1,7 @@
 package com.bomberman;
 
 import com.bomberman.entities.Bomb;
-import com.bomberman.entities.Position;
+import com.bomberman.entities.Movement;
 import com.bomberman.game.Game;
 import com.corundumstudio.socketio.Configuration;
 import com.corundumstudio.socketio.SocketIOClient;
@@ -9,11 +9,11 @@ import com.corundumstudio.socketio.SocketIOServer;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class SocketServer {
+class SocketServer {
   private final Game game;
   private SocketIOServer server;
 
-  public SocketServer(final Game game) {
+  SocketServer(final Game game) {
     this.game = game;
 
     initServer();
@@ -58,10 +58,10 @@ public class SocketServer {
 
     server.addEventListener(
         "movePlayer",
-        Position.class,
-        (client, position, ackRequest) -> {
+        Movement.class,
+        (client, movement, ackRequest) -> {
           final var playerId = getPlayerId(client);
-          game.movePlayer(playerId, position);
+          game.movePlayer(playerId, movement);
           server.getBroadcastOperations().sendEvent("getGameState", game.getGameState());
         });
 
@@ -94,7 +94,7 @@ public class SocketServer {
           removeBombExplosion(bomb);
           server.getBroadcastOperations().sendEvent("getGameState", game.getGameState());
         },
-        3,
+        bomb.getExplosionTime(),
         TimeUnit.SECONDS);
   }
 

@@ -3,13 +3,14 @@ package com.bomberman.game;
 import com.bomberman.entities.Bomb;
 import com.bomberman.entities.BombExplosion;
 import com.bomberman.entities.MapObject;
+import com.bomberman.entities.Movement;
 import com.bomberman.entities.Player;
 import com.bomberman.entities.Position;
 import com.bomberman.entities.Wall;
+import com.bomberman.exception.PlayerNotFoundException;
 import com.bomberman.factories.LevelFactory;
 import com.bomberman.factories.PlayerFactory;
 import com.bomberman.utils.Collisions;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -38,6 +39,36 @@ public class Game {
 
   public void removePlayer(final String id) {
     gameState.getPlayers().removeIf(x -> x.getId().equals(id));
+  }
+
+  public void movePlayer(final String playerId, final Movement movement) {
+    final var player =
+        gameState.getPlayers().stream()
+            .filter($player -> $player.getId().equals(playerId))
+            .findFirst()
+            .orElseThrow(() -> new PlayerNotFoundException(playerId));
+
+    if (player.isDead()) {
+      return;
+    }
+
+    if (movement.getDt() > 0.9) {
+      System.out.println("WRONG DT " + movement.getDt());
+      return;
+    }
+
+    final float movementSpeed = movement.getDt() * player.getSpeed();
+    final var position = movement.getDirection().buildPosition(player.getPosition(), movementSpeed);
+    player.move(position);
+
+    player.addStateTime(movement.getDt());
+
+    final var explosion =
+        gameState.getBombExplosions().stream()
+            .filter($explosion -> Collisions.willCollide(player, player.getPosition(), $explosion))
+            .findFirst();
+
+    explosion.ifPresent($explosion -> updateDeathsAndScore($explosion.getPlayerId(), player));
   }
 
   public void movePlayer(final String playerId, final Position position) {
@@ -70,12 +101,10 @@ public class Game {
   }
 
   public Optional<Bomb> placeBomb(final String playerId) {
-    final var currentTime = ZonedDateTime.now();
     final var player = getPlayer(playerId);
-    final var bombDurationInSeconds = player.getBombDurationInSeconds();
     final var position = Position.round(player.getPosition());
-    final var explosionTime = currentTime.plusSeconds(bombDurationInSeconds);
-    final var bomb = new Bomb(position, explosionTime, player, gameState.getPlayers());
+    final var bomb =
+        new Bomb(position, player.getBombDurationInSeconds(), player, gameState.getPlayers());
     if (Collisions.willCollide(bomb, position, new ArrayList<>(gameState.getBombs()))) {
       return Optional.empty();
     }
