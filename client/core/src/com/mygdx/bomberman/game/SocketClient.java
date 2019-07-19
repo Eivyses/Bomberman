@@ -2,7 +2,8 @@ package com.mygdx.bomberman.game;
 
 import com.google.gson.Gson;
 import com.mygdx.bomberman.constants.Constants;
-import com.mygdx.bomberman.entities.Position;
+import com.mygdx.bomberman.entities.Direction;
+import com.mygdx.bomberman.entities.Movement;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import java.net.URISyntaxException;
@@ -18,9 +19,9 @@ public class SocketClient {
     configureListeners();
   }
 
-  public void move(final float x, final float y) {
-    final Position position = new Position(x, y);
-    socket.emit("movePlayer", position.toJson());
+  public void move(final Direction direction, final float dt) {
+    final Movement movement = new Movement(direction, dt);
+    socket.emit("movePlayer", movement.toJson());
   }
 
   public void respawnPlayer() {

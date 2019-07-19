@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.mygdx.bomberman.entities.Position;
 
 /**
- * A nicer class for showing framerate that doesn't spam the console like Logger.log()
+ * A nicer class for showing frameRate that doesn't spam the console like Logger.log()
  *
  * @author William Hartman
  */

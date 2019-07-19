@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.bomberman.drawings.FrameRate;
 import com.mygdx.bomberman.drawings.ScoreBoard;
 import com.mygdx.bomberman.drawings.TextDrawable;
-import com.mygdx.bomberman.entities.Player;
+import com.mygdx.bomberman.entities.Direction;
 import com.mygdx.bomberman.game.Drawer;
 import com.mygdx.bomberman.game.Game;
 import com.mygdx.bomberman.game.SocketClient;
@@ -22,7 +22,6 @@ public class Bomberman extends ApplicationAdapter {
   private SpriteBatch batch;
   private TextDrawable frameRate;
   private ScoreBoard scoreBoard;
-  private float stateTime;
 
   @Override
   public void create() {
@@ -35,51 +34,29 @@ public class Bomberman extends ApplicationAdapter {
     drawer = new Drawer(batch);
 
     socketClient = new SocketClient(game);
-
-    stateTime = 0f;
   }
 
   @Override
   public void render() {
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-    final Player player = game.getCurrentPlayer();
-    final float speed = 120f;
-
     final float dt = Gdx.graphics.getDeltaTime();
-    stateTime += dt;
 
     if (Gdx.input.isKeyJustPressed(Keys.R)) {
       socketClient.respawnPlayer();
     }
 
     if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-      socketClient.move(player.getPosition().getX(), player.getPosition().getY() + dt * speed);
+      socketClient.move(Direction.UP, dt);
     }
     if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-      socketClient.move(player.getPosition().getX(), player.getPosition().getY() - dt * speed);
+      socketClient.move(Direction.DOWN, dt);
     }
     if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-      socketClient.move(player.getPosition().getX() - dt * speed, player.getPosition().getY());
+      socketClient.move(Direction.LEFT, dt);
     }
     if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-      socketClient.move(player.getPosition().getX() + dt * speed, player.getPosition().getY());
-    }
-    if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && Gdx.input.isKeyPressed(Input.Keys.UP)) {
-      socketClient.move(
-          player.getPosition().getX() + dt * speed, player.getPosition().getY() + dt * speed);
-    }
-    if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-      socketClient.move(
-          player.getPosition().getX() + dt * speed, player.getPosition().getY() - dt * speed);
-    }
-    if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && Gdx.input.isKeyPressed(Input.Keys.UP)) {
-      socketClient.move(
-          player.getPosition().getX() - dt * speed, player.getPosition().getY() + dt * speed);
-    }
-    if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-      socketClient.move(
-          player.getPosition().getX() - dt * speed, player.getPosition().getY() - dt * speed);
+      socketClient.move(Direction.RIGHT, dt);
     }
     if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
       socketClient.placeBomb();
@@ -87,7 +64,7 @@ public class Bomberman extends ApplicationAdapter {
 
     batch.begin();
 
-    drawer.drawGame(game.getGameState(), stateTime);
+    drawer.drawGame(game.getGameState());
 
     frameRate.updateAndDraw();
     scoreBoard.setPlayers(game.getGameState().getPlayers());

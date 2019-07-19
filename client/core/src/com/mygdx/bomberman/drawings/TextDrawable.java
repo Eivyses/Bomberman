@@ -15,7 +15,7 @@ public abstract class TextDrawable implements Disposable {
   private String text;
   private final Position position;
 
-  public TextDrawable(final SpriteBatch batch, final String text, final Position position) {
+  TextDrawable(final SpriteBatch batch, final String text, final Position position) {
     this.text = text;
     font = new BitmapFont();
     this.batch = batch;
@@ -41,7 +41,7 @@ public abstract class TextDrawable implements Disposable {
     draw();
   }
 
-  public void draw() {
+  private void draw() {
     font.draw(batch, text, position.getX(), position.getY());
   }
 

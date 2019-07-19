@@ -8,7 +8,6 @@ import com.mygdx.bomberman.entities.Bomb;
 import com.mygdx.bomberman.entities.BombExplosion;
 import com.mygdx.bomberman.entities.Player;
 import com.mygdx.bomberman.entities.Wall;
-
 import java.util.List;
 
 public class Drawer {
@@ -50,17 +49,16 @@ public class Drawer {
     movingPlayer = new Animation<>(0.075f, animationFrames);
   }
 
-  public void drawGame(final GameState gameState, final float stateTime) {
-    final TextureRegion currentFrame = movingPlayer.getKeyFrame(stateTime, true);
+  public void drawGame(final GameState gameState) {
     drawTerrain();
     drawExplosions(gameState.getBombExplosions());
     drawWalls(gameState.getWalls());
     drawBombs(gameState.getBombs());
-    drawPlayers(gameState.getPlayers(), currentFrame);
+    drawPlayers(gameState.getPlayers());
   }
 
-  private void drawPlayers(final List<Player> players, final TextureRegion currentFrame) {
-    players.forEach(player -> drawPlayer(player, currentFrame));
+  private void drawPlayers(final List<Player> players) {
+    players.forEach(this::drawPlayer);
   }
 
   private void drawExplosions(final List<BombExplosion> explosions) {
@@ -72,10 +70,11 @@ public class Drawer {
         bombExplosionTexture, explosion.getPosition().getX(), explosion.getPosition().getY());
   }
 
-  private void drawPlayer(final Player player, final TextureRegion currentFrame) {
+  private void drawPlayer(final Player player) {
     if (player.isDead()) {
       batch.draw(bombExplosionTexture, player.getPosition().getX(), player.getPosition().getY());
     } else {
+      final TextureRegion currentFrame = movingPlayer.getKeyFrame(player.getStateTime(), true);
       batch.draw(currentFrame, player.getPosition().getX(), player.getPosition().getY());
     }
   }
