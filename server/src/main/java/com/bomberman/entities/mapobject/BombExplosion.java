@@ -1,6 +1,7 @@
-package com.bomberman.entities;
+package com.bomberman.entities.mapobject;
 
 import com.bomberman.constants.Configuration;
+import com.bomberman.entities.Position;
 import com.bomberman.game.GameState;
 import com.bomberman.utils.Collisions;
 import java.util.ArrayList;

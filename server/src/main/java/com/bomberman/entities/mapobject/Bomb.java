@@ -1,6 +1,9 @@
-package com.bomberman.entities;
+package com.bomberman.entities.mapobject;
 
 import com.bomberman.constants.Configuration;
+import com.bomberman.entities.BombPlacedZone;
+import com.bomberman.entities.Position;
+import com.bomberman.entities.mapobject.movable.Player;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -27,7 +30,7 @@ public class Bomb extends MapObject {
     players.forEach(p -> bombPlacedZoneList.add(new BombPlacedZone(p.getId(), false)));
   }
 
-  void setHasLeftBombZone(final String playerId) {
+  public void setHasLeftBombZone(final String playerId) {
     final var player =
         bombPlacedZoneList.stream().filter(bpz -> bpz.getPlayerId().equals(playerId)).findFirst();
     player.ifPresent(BombPlacedZone::setHasLeftBombZone);
@@ -59,7 +62,7 @@ public class Bomb extends MapObject {
     return Configuration.TEXTURE_SIZE;
   }
 
-  boolean hasLeftBombZone(final String playerId) {
+  public boolean hasLeftBombZone(final String playerId) {
     final var player =
         bombPlacedZoneList.stream().filter(bpz -> bpz.getPlayerId().equals(playerId)).findFirst();
     return player.map(BombPlacedZone::hasLeftBombZone).orElse(true);

@@ -1,4 +1,6 @@
-package com.bomberman.entities;
+package com.bomberman.entities.mapobject;
+
+import com.bomberman.entities.Position;
 
 public abstract class MapObject {
   private Position position;

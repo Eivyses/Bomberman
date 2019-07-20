@@ -1,6 +1,7 @@
 package com.bomberman.entities;
 
 import com.bomberman.constants.Configuration;
+import com.bomberman.entities.mapobject.MapObject;
 import java.util.Objects;
 
 public class Position {

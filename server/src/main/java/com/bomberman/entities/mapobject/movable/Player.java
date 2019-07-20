@@ -1,6 +1,9 @@
-package com.bomberman.entities;
+package com.bomberman.entities.mapobject.movable;
 
 import com.bomberman.constants.Configuration;
+import com.bomberman.entities.Position;
+import com.bomberman.entities.mapobject.Bomb;
+import com.bomberman.entities.mapobject.MapObject;
 import com.bomberman.game.GameState;
 import com.bomberman.utils.Collisions;
 import java.util.Collections;
@@ -13,6 +16,8 @@ public class Player extends MapObject implements Movable {
   private final int bombDurationInSeconds;
   private float speed;
   private int bombRange;
+  private int placedBombCount;
+  private int maxBombCount;
   private final GameState gameState;
   private boolean dead;
   private int killCount;
@@ -27,6 +32,8 @@ public class Player extends MapObject implements Movable {
     bombDurationInSeconds = Configuration.BOMB_DURATION;
     dead = false;
     killCount = 0;
+    placedBombCount = 0;
+    maxBombCount = 1;
     stateTime = 0f;
   }
 
@@ -57,6 +64,23 @@ public class Player extends MapObject implements Movable {
     }
     bombRange -= 1;
     System.out.println("bomb range decreased to " + bombRange);
+  }
+
+  public void increaseMaxBombCount() {
+    maxBombCount++;
+    System.out.println("max bomb count increased to " + bombRange);
+  }
+
+  public void incrementPlacedBombCount() {
+    placedBombCount++;
+  }
+
+  public void decrementPlacedBombCount() {
+    placedBombCount--;
+  }
+
+  public boolean canPlaceBomb() {
+    return placedBombCount < maxBombCount;
   }
 
   public String getId() {
@@ -131,7 +155,7 @@ public class Player extends MapObject implements Movable {
     return !Collisions.willCollide(this, position, Collections.singletonList(bomb));
   }
 
-  int getBombRange() {
+  public int getBombRange() {
     return bombRange;
   }
 

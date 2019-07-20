@@ -1,7 +1,7 @@
 package com.bomberman.factories;
 
-import com.bomberman.entities.Player;
 import com.bomberman.entities.Position;
+import com.bomberman.entities.mapobject.movable.Player;
 import com.bomberman.game.GameState;
 
 public class PlayerFactory {

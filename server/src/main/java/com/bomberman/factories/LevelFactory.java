@@ -1,9 +1,9 @@
 package com.bomberman.factories;
 
 import com.bomberman.constants.Configuration;
-import com.bomberman.entities.Brick;
 import com.bomberman.entities.Position;
-import com.bomberman.entities.Wall;
+import com.bomberman.entities.mapobject.Brick;
+import com.bomberman.entities.mapobject.Wall;
 import com.bomberman.game.GameState;
 
 public class LevelFactory {

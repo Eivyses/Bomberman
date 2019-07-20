@@ -1,10 +1,11 @@
-package com.bomberman.entities;
+package com.bomberman.entities.mapobject;
 
 import com.bomberman.constants.Configuration;
+import com.bomberman.entities.Position;
 
-public class Wall extends MapObject {
+public class Brick extends MapObject {
 
-  public Wall(final Position position) {
+  public Brick(final Position position) {
     super(position);
   }
 

@@ -1,7 +1,7 @@
 package com.bomberman;
 
-import com.bomberman.entities.Bomb;
 import com.bomberman.entities.Movement;
+import com.bomberman.entities.mapobject.Bomb;
 import com.bomberman.game.Game;
 import com.corundumstudio.socketio.Configuration;
 import com.corundumstudio.socketio.SocketIOClient;
@@ -115,6 +115,14 @@ class SocketServer {
         (client, data, ackRequest) -> {
           final var playerId = getPlayerId(client);
           game.decreasePlayerSpeed(playerId);
+          server.getBroadcastOperations().sendEvent("getGameState", game.getGameState());
+        });
+    server.addEventListener(
+        "increaseMaxBombCount",
+        String.class,
+        (client, data, ackRequest) -> {
+          final var playerId = getPlayerId(client);
+          game.increaseMaxBombCount(playerId);
           server.getBroadcastOperations().sendEvent("getGameState", game.getGameState());
         });
   }

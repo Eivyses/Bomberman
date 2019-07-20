@@ -1,11 +1,11 @@
 package com.bomberman.game;
 
-import com.bomberman.entities.Bomb;
-import com.bomberman.entities.BombExplosion;
-import com.bomberman.entities.MapObject;
 import com.bomberman.entities.Movement;
-import com.bomberman.entities.Player;
 import com.bomberman.entities.Position;
+import com.bomberman.entities.mapobject.Bomb;
+import com.bomberman.entities.mapobject.BombExplosion;
+import com.bomberman.entities.mapobject.MapObject;
+import com.bomberman.entities.mapobject.movable.Player;
 import com.bomberman.exception.PlayerNotFoundException;
 import com.bomberman.factories.LevelFactory;
 import com.bomberman.factories.PlayerFactory;
@@ -72,6 +72,10 @@ public class Game {
 
   public Optional<Bomb> placeBomb(final String playerId) {
     final var player = getPlayer(playerId);
+    if (!player.canPlaceBomb()) {
+      return Optional.empty();
+    }
+
     final var position = Position.round(player.getPosition());
     final var bomb =
         new Bomb(position, player.getBombDurationInSeconds(), player, gameState.getPlayers());
@@ -79,6 +83,7 @@ public class Game {
       return Optional.empty();
     }
     gameState.getBombs().add(bomb);
+    player.incrementPlacedBombCount();
     return Optional.of(bomb);
   }
 
@@ -86,6 +91,8 @@ public class Game {
     if (!gameState.getBombs().contains(bomb)) {
       return;
     }
+    final var player = getPlayer(playerId);
+    player.decrementPlacedBombCount();
     final var bombRange = bomb.getBombRange();
     gameState.getBombs().remove(bomb);
     final List<Bomb> bombsInExplosionRange =
@@ -199,5 +206,12 @@ public class Game {
         gameState.getPlayers().stream().filter(x -> x.getId().equals(playerId)).findFirst();
 
     playerOptional.ifPresent(Player::decreaseBombRange);
+  }
+
+  public void increaseMaxBombCount(final String playerId) {
+    final var playerOptional =
+        gameState.getPlayers().stream().filter(x -> x.getId().equals(playerId)).findFirst();
+
+    playerOptional.ifPresent(Player::increaseMaxBombCount);
   }
 }

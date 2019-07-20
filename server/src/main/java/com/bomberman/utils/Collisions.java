@@ -1,8 +1,8 @@
 package com.bomberman.utils;
 
 import com.bomberman.constants.Configuration;
-import com.bomberman.entities.MapObject;
 import com.bomberman.entities.Position;
+import com.bomberman.entities.mapobject.MapObject;
 import com.bomberman.game.GameState;
 import java.util.List;
 import java.util.Objects;
