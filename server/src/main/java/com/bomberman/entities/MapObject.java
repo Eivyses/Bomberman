@@ -24,11 +24,11 @@ public abstract class MapObject {
   }
 
   public Position getTopLeft() {
-    return new Position(position.getX(), position.getY() + getTextureHeight());
+    return new Position(position.getX(), position.getY() + getTextureHeight() - 0.01f);
   }
 
   public Position getBotRight() {
-    return new Position(position.getX() + getTextureWidth(), position.getY());
+    return new Position(position.getX() + getTextureWidth() - 0.01f, position.getY());
   }
 
   public abstract int getTextureWidth();

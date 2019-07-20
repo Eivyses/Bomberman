@@ -10,4 +10,5 @@ public class Configuration {
   public static final float PLAYER_SPEED_INCREASE_VALUE = 0.25f;
   public static final float MAX_PLAYER_SPEED = 4f;
   public static final int BASE_BOMB_RANGE = 2;
+  public static final int BOMB_DURATION = 3;
 }

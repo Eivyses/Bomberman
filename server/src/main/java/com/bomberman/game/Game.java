@@ -6,7 +6,6 @@ import com.bomberman.entities.MapObject;
 import com.bomberman.entities.Movement;
 import com.bomberman.entities.Player;
 import com.bomberman.entities.Position;
-import com.bomberman.entities.Wall;
 import com.bomberman.exception.PlayerNotFoundException;
 import com.bomberman.factories.LevelFactory;
 import com.bomberman.factories.PlayerFactory;
@@ -154,10 +153,6 @@ public class Game {
 
     gameState.getBricks().removeAll(bricksInExplosion);
     gameState.getBombExplosions().removeAll(explosions);
-  }
-
-  public void initGame() {
-    gameState.getWalls().add(new Wall(new Position(32f, 32f)));
   }
 
   private Player getPlayer(final String playerId) {

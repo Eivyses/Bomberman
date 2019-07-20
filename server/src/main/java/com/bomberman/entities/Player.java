@@ -24,7 +24,7 @@ public class Player extends MapObject implements Movable {
     this.gameState = gameState;
     speed = Configuration.BASE_PLAYER_SPEED;
     bombRange = Configuration.BASE_BOMB_RANGE;
-    bombDurationInSeconds = 3;
+    bombDurationInSeconds = Configuration.BOMB_DURATION;
     dead = false;
     killCount = 0;
     stateTime = 0f;

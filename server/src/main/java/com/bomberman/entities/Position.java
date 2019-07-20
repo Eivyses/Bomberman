@@ -19,11 +19,11 @@ public class Position {
   }
 
   public Position getTopLeft(final MapObject mapObject) {
-    return new Position(x, y + mapObject.getTextureHeight());
+    return new Position(x, y + mapObject.getTextureHeight() - 0.01f);
   }
 
   public Position getBotRight(final MapObject mapObject) {
-    return new Position(x + mapObject.getTextureWidth(), y);
+    return new Position(x + mapObject.getTextureWidth() - 0.01f, y);
   }
 
   public Position() {
