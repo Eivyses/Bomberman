@@ -62,6 +62,8 @@ public class Bomberman extends ApplicationAdapter {
   @Override
   public void resize(final int width, final int height) {
     frameRate.resize(width, height);
+    scoreBoard.resize(width, height);
+    debugTooltip.resize(width, height);
   }
 
   private void initControls() {

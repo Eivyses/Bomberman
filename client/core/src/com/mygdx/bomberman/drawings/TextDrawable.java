@@ -13,7 +13,7 @@ public abstract class TextDrawable implements Disposable {
   private final SpriteBatch batch;
   private OrthographicCamera cam;
   private String text;
-  private final Position position;
+  private Position position;
 
   TextDrawable(final SpriteBatch batch, final String text, final Position position) {
     this.text = text;
@@ -24,6 +24,13 @@ public abstract class TextDrawable implements Disposable {
   }
 
   public void resize(final int screenWidth, final int screenHeight) {
+    final float oldWidth = cam.viewportWidth;
+    final float oldHeight = cam.viewportHeight;
+
+    final float newX = screenWidth / oldWidth * position.getX();
+    final float newY = screenHeight / oldHeight * position.getY();
+    position = new Position(newX, newY);
+
     cam = new OrthographicCamera(screenWidth, screenHeight);
     cam.translate(screenWidth / 2, screenHeight / 2);
     cam.update();

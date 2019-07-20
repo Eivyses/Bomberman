@@ -11,7 +11,7 @@ public class DebugTooltip extends TextDrawable {
         batch,
         "",
         new Position(
-            Gdx.graphics.getWidth() - (Gdx.graphics.getWidth() / 100 * 15),
+            Gdx.graphics.getWidth() - (Gdx.graphics.getWidth() / 100 * 20),
             Gdx.graphics.getHeight() - (Gdx.graphics.getHeight() / 100)));
   }
 
