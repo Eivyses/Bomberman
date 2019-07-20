@@ -1,6 +1,6 @@
 package com.bomberman.entities;
 
-import com.bomberman.constants.MapConst;
+import com.bomberman.constants.Configuration;
 import com.bomberman.game.GameState;
 import com.bomberman.utils.Collisions;
 import java.util.ArrayList;
@@ -11,14 +11,8 @@ public class BombExplosion extends MapObject {
   private final String bombId;
   private final String playerId;
 
-  public BombExplosion(final Position position, final String bombId, final String playerId) {
+  private BombExplosion(final Position position, final String bombId, final String playerId) {
     super(position);
-    this.bombId = bombId;
-    this.playerId = playerId;
-  }
-
-  public BombExplosion(final float x, final float y, final String bombId, final String playerId) {
-    super(x, y);
     this.bombId = bombId;
     this.playerId = playerId;
   }
@@ -33,12 +27,12 @@ public class BombExplosion extends MapObject {
 
   @Override
   public int getTextureWidth() {
-    return MapConst.TEXTURE_SIZE;
+    return Configuration.TEXTURE_SIZE;
   }
 
   @Override
   public int getTextureHeight() {
-    return MapConst.TEXTURE_SIZE;
+    return Configuration.TEXTURE_SIZE;
   }
 
   public static List<BombExplosion> of(

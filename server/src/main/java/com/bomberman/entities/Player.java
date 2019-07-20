@@ -1,6 +1,6 @@
 package com.bomberman.entities;
 
-import com.bomberman.constants.MapConst;
+import com.bomberman.constants.Configuration;
 import com.bomberman.game.GameState;
 import com.bomberman.utils.Collisions;
 import java.util.Collections;
@@ -22,8 +22,8 @@ public class Player extends MapObject implements Movable {
     super(position);
     this.id = id;
     this.gameState = gameState;
-    speed = 120f;
-    bombRange = 2;
+    speed = Configuration.BASE_PLAYER_SPEED;
+    bombRange = Configuration.BASE_BOMB_RANGE;
     bombDurationInSeconds = 3;
     dead = false;
     killCount = 0;
@@ -108,12 +108,12 @@ public class Player extends MapObject implements Movable {
 
   @Override
   public int getTextureWidth() {
-    return MapConst.PLAYER_TEXTURE_WIDTH;
+    return Configuration.PLAYER_TEXTURE_WIDTH;
   }
 
   @Override
   public int getTextureHeight() {
-    return MapConst.PLAYER_TEXTURE_HEIGHT;
+    return Configuration.PLAYER_TEXTURE_HEIGHT;
   }
 
   @Override

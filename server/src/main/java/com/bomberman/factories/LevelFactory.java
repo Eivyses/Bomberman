@@ -1,6 +1,6 @@
 package com.bomberman.factories;
 
-import com.bomberman.constants.MapConst;
+import com.bomberman.constants.Configuration;
 import com.bomberman.entities.Position;
 import com.bomberman.entities.Wall;
 import com.bomberman.game.GameState;
@@ -31,7 +31,7 @@ public class LevelFactory {
       for (int x = 0; x < WIDTH; x++) {
         final float height = HEIGHT - y - 1;
         final Position position =
-            new Position(x * MapConst.TEXTURE_SIZE, height * MapConst.TEXTURE_SIZE);
+            new Position(x * Configuration.TEXTURE_SIZE, height * Configuration.TEXTURE_SIZE);
         switch (level[y][x]) {
           case 1:
             gameState.getWalls().add(new Wall(position));

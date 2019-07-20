@@ -1,10 +1,9 @@
 package com.bomberman.utils;
 
-import com.bomberman.constants.MapConst;
+import com.bomberman.constants.Configuration;
 import com.bomberman.entities.MapObject;
 import com.bomberman.entities.Position;
 import com.bomberman.game.GameState;
-
 import java.util.List;
 import java.util.Objects;
 
@@ -71,8 +70,8 @@ public class Collisions {
   }
 
   public static boolean isOutOfBound(final MapObject mapObject, final Position newPosition) {
-    return newPosition.getX() + mapObject.getTextureWidth() > MapConst.MAP_WIDTH
-        || newPosition.getY() + mapObject.getTextureHeight() > MapConst.MAP_HEIGHT;
+    return newPosition.getX() + mapObject.getTextureWidth() > Configuration.MAP_WIDTH
+        || newPosition.getY() + mapObject.getTextureHeight() > Configuration.MAP_HEIGHT;
   }
 
   public static boolean willCollide(

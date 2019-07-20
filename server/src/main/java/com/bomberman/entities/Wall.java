@@ -1,6 +1,6 @@
 package com.bomberman.entities;
 
-import com.bomberman.constants.MapConst;
+import com.bomberman.constants.Configuration;
 
 public class Wall extends MapObject {
 
@@ -10,11 +10,11 @@ public class Wall extends MapObject {
 
   @Override
   public int getTextureWidth() {
-    return MapConst.TEXTURE_SIZE;
+    return Configuration.TEXTURE_SIZE;
   }
 
   @Override
   public int getTextureHeight() {
-    return MapConst.TEXTURE_SIZE;
+    return Configuration.TEXTURE_SIZE;
   }
 }

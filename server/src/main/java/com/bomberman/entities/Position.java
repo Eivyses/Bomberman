@@ -1,7 +1,6 @@
 package com.bomberman.entities;
 
-import com.bomberman.constants.MapConst;
-
+import com.bomberman.constants.Configuration;
 import java.util.Objects;
 
 public class Position {
@@ -14,8 +13,8 @@ public class Position {
   }
 
   public static Position round(final Position pos) {
-    final int xPos = ((int) (pos.x / MapConst.TEXTURE_SIZE)) * MapConst.TEXTURE_SIZE;
-    final int yPos = ((int) (pos.y / MapConst.TEXTURE_SIZE)) * MapConst.TEXTURE_SIZE;
+    final int xPos = ((int) (pos.x / Configuration.TEXTURE_SIZE)) * Configuration.TEXTURE_SIZE;
+    final int yPos = ((int) (pos.y / Configuration.TEXTURE_SIZE)) * Configuration.TEXTURE_SIZE;
     return new Position(xPos, yPos);
   }
 
