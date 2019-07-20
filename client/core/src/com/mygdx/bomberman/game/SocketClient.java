@@ -1,7 +1,7 @@
 package com.mygdx.bomberman.game;
 
 import com.google.gson.Gson;
-import com.mygdx.bomberman.constants.Constants;
+import com.mygdx.bomberman.constants.Configuration;
 import com.mygdx.bomberman.entities.Direction;
 import com.mygdx.bomberman.entities.Movement;
 import io.socket.client.IO;
@@ -38,7 +38,7 @@ public class SocketClient {
 
   private void connectSocket() {
     try {
-      socket = IO.socket(Constants.url + ":" + Constants.port);
+      socket = IO.socket(Configuration.URL + ":" + Configuration.PORT);
       socket.connect();
     } catch (final URISyntaxException e) {
       e.printStackTrace();
