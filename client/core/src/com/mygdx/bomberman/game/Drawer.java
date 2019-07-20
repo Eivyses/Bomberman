@@ -6,12 +6,12 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.mygdx.bomberman.constants.Configuration;
-import com.mygdx.bomberman.entities.Bomb;
-import com.mygdx.bomberman.entities.BombExplosion;
-import com.mygdx.bomberman.entities.Brick;
-import com.mygdx.bomberman.entities.MapObject;
-import com.mygdx.bomberman.entities.Player;
-import com.mygdx.bomberman.entities.Wall;
+import com.mygdx.bomberman.entities.mapobject.Bomb;
+import com.mygdx.bomberman.entities.mapobject.BombExplosion;
+import com.mygdx.bomberman.entities.mapobject.Brick;
+import com.mygdx.bomberman.entities.mapobject.MapObject;
+import com.mygdx.bomberman.entities.mapobject.Player;
+import com.mygdx.bomberman.entities.mapobject.Wall;
 import java.util.List;
 
 public class Drawer {

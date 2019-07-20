@@ -23,6 +23,7 @@ public class DebugTooltip extends TextDrawable {
             + "F3 - decrease bomb range\n"
             + "F4 - increase player speed\n"
             + "F5 - decrease player speed\n"
-            + "F6 - respawn player");
+            + "F6 - increase max bomb count\n"
+            + "F7 - respawn player");
   }
 }

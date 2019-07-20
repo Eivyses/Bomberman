@@ -1,4 +1,6 @@
-package com.mygdx.bomberman.entities;
+package com.mygdx.bomberman.entities.mapobject;
+
+import com.mygdx.bomberman.entities.Position;
 
 public class BombExplosion extends MapObject {
 

@@ -2,8 +2,8 @@ package com.mygdx.bomberman.drawings;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.mygdx.bomberman.entities.Player;
 import com.mygdx.bomberman.entities.Position;
+import com.mygdx.bomberman.entities.mapobject.Player;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

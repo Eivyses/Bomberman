@@ -83,4 +83,8 @@ public class SocketClient {
   public void decreasePlayerSpeed() {
     socket.emit("decreasePlayerSpeed");
   }
+
+  public void increaseMaxBombCount() {
+    socket.emit("increaseMaxBombCount");
+  }
 }

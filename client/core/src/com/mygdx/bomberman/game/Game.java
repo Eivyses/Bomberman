@@ -1,6 +1,6 @@
 package com.mygdx.bomberman.game;
 
-import com.mygdx.bomberman.entities.Player;
+import com.mygdx.bomberman.entities.mapobject.Player;
 
 public class Game {
   private GameState gameState;

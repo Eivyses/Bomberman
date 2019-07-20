@@ -107,6 +107,10 @@ public class Bomberman extends ApplicationAdapter {
     }
 
     if (Gdx.input.isKeyJustPressed(Keys.F6) && debugTooltipActive) {
+      socketClient.increaseMaxBombCount();
+    }
+
+    if (Gdx.input.isKeyJustPressed(Keys.F7) && debugTooltipActive) {
       socketClient.respawnPlayer();
     }
   }
