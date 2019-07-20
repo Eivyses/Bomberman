@@ -109,11 +109,11 @@ public class Player extends MapObject implements Movable {
   public void move(final Position position) {
     final var obstacles =
         Stream.concat(
-                gameState.getWalls().stream(),
-                gameState.getBombs().stream().filter(bomb -> bomb.hasLeftBombZone(id)))
+                Stream.concat(gameState.getWalls().stream(), gameState.getBricks().stream()),
+                gameState.getBombs().stream().filter($bomb -> $bomb.hasLeftBombZone(id)))
             .collect(Collectors.toList());
     final var currentOnBomb =
-        gameState.getBombs().stream().filter(bomb -> !bomb.hasLeftBombZone(id)).findFirst();
+        gameState.getBombs().stream().filter($bomb -> !$bomb.hasLeftBombZone(id)).findFirst();
 
     currentOnBomb
         .filter($bomb -> willNotCollide(position, $bomb))

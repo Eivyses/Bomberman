@@ -1,6 +1,7 @@
 package com.bomberman.factories;
 
 import com.bomberman.constants.Configuration;
+import com.bomberman.entities.Brick;
 import com.bomberman.entities.Position;
 import com.bomberman.entities.Wall;
 import com.bomberman.game.GameState;
@@ -14,14 +15,14 @@ public class LevelFactory {
       new int[][] {
         {1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0},
         {0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0},
+        {0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 2, 1, 0},
+        {0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1, 0},
         {0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-        {0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-        {0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
+        {0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 2, 1, 0, 1, 0},
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
+        {0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 2, 1, 0, 1, 0},
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}
       };
 
@@ -36,6 +37,8 @@ public class LevelFactory {
           case 1:
             gameState.getWalls().add(new Wall(position));
             break;
+          case 2:
+            gameState.getBricks().add(new Brick(position));
         }
       }
     }

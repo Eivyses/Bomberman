@@ -1,7 +1,11 @@
 package com.bomberman.game;
 
-import com.bomberman.entities.*;
-
+import com.bomberman.entities.Bomb;
+import com.bomberman.entities.BombExplosion;
+import com.bomberman.entities.Brick;
+import com.bomberman.entities.MapObject;
+import com.bomberman.entities.Player;
+import com.bomberman.entities.Wall;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,12 +16,18 @@ public class GameState {
   private final List<Bomb> bombs;
   private final List<Wall> walls;
   private final List<BombExplosion> bombExplosions;
+  private final List<Brick> bricks;
 
   public GameState() {
     players = new ArrayList<>();
     bombs = new ArrayList<>();
     walls = new ArrayList<>();
     bombExplosions = new ArrayList<>();
+    bricks = new ArrayList<>();
+  }
+
+  public List<Brick> getBricks() {
+    return bricks;
   }
 
   public List<Player> getPlayers() {
@@ -37,7 +47,6 @@ public class GameState {
   }
 
   public List<MapObject> getObstacles() {
-    return new ArrayList<>(walls);
-//    return Stream.concat(walls.stream(), bombs.stream()).collect(Collectors.toList());
+    return Stream.concat(walls.stream(), bricks.stream()).collect(Collectors.toList());
   }
 }

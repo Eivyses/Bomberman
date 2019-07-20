@@ -142,6 +142,17 @@ public class Game {
             .filter($explosion -> $explosion.getBombId().equals(bomb.getBombId()))
             .collect(Collectors.toList());
 
+    final var bricksInExplosion =
+        gameState.getBricks().stream()
+            .filter(
+                $brick ->
+                    explosions.stream()
+                        .anyMatch(
+                            $explosion ->
+                                Objects.equals($brick.getPosition(), $explosion.getPosition())))
+            .collect(Collectors.toList());
+
+    gameState.getBricks().removeAll(bricksInExplosion);
     gameState.getBombExplosions().removeAll(explosions);
   }
 

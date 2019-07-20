@@ -44,12 +44,15 @@ public class BombExplosion extends MapObject {
       final var position =
           new Position(
               bomb.getPosition().getX() + (x * bomb.getTextureWidth()), bomb.getPosition().getY());
-      final boolean willHitWall =
-          gameState.getWalls().stream()
-              .anyMatch(wall -> Collisions.isAtSameSquare(wall.getPosition(), position));
-      if (willHitWall) {
+      if (willHitObstacle(gameState.getWalls(), position)) {
         break;
       }
+
+      if (willHitObstacle(gameState.getBricks(), position)) {
+        bombExplosions.add(new BombExplosion(position, bombId, playerId));
+        break;
+      }
+
       bombExplosions.add(new BombExplosion(position, bombId, playerId));
     }
 
@@ -57,10 +60,11 @@ public class BombExplosion extends MapObject {
       final var position =
           new Position(
               bomb.getPosition().getX() - (x * bomb.getTextureWidth()), bomb.getPosition().getY());
-      final boolean willHitWall =
-          gameState.getWalls().stream()
-              .anyMatch(wall -> Collisions.isAtSameSquare(wall.getPosition(), position));
-      if (willHitWall) {
+      if (willHitObstacle(gameState.getWalls(), position)) {
+        break;
+      }
+      if (willHitObstacle(gameState.getBricks(), position)) {
+        bombExplosions.add(new BombExplosion(position, bombId, playerId));
         break;
       }
       bombExplosions.add(new BombExplosion(position, bombId, playerId));
@@ -70,10 +74,11 @@ public class BombExplosion extends MapObject {
       final var position =
           new Position(
               bomb.getPosition().getX(), bomb.getPosition().getY() + (y * bomb.getTextureHeight()));
-      final boolean willHitWall =
-          gameState.getWalls().stream()
-              .anyMatch(wall -> Collisions.isAtSameSquare(wall.getPosition(), position));
-      if (willHitWall) {
+      if (willHitObstacle(gameState.getWalls(), position)) {
+        break;
+      }
+      if (willHitObstacle(gameState.getBricks(), position)) {
+        bombExplosions.add(new BombExplosion(position, bombId, playerId));
         break;
       }
       bombExplosions.add(new BombExplosion(position, bombId, playerId));
@@ -83,14 +88,21 @@ public class BombExplosion extends MapObject {
       final var position =
           new Position(
               bomb.getPosition().getX(), bomb.getPosition().getY() - (y * bomb.getTextureHeight()));
-      final boolean willHitWall =
-          gameState.getWalls().stream()
-              .anyMatch(wall -> Collisions.isAtSameSquare(wall.getPosition(), position));
-      if (willHitWall) {
+      if (willHitObstacle(gameState.getWalls(), position)) {
+        break;
+      }
+      if (willHitObstacle(gameState.getBricks(), position)) {
+        bombExplosions.add(new BombExplosion(position, bombId, playerId));
         break;
       }
       bombExplosions.add(new BombExplosion(position, bombId, playerId));
     }
     return bombExplosions;
+  }
+
+  private static boolean willHitObstacle(
+      final List<? extends MapObject> obstacles, final Position position) {
+    return obstacles.stream()
+        .anyMatch($obstacle -> Collisions.isAtSameSquare($obstacle.getPosition(), position));
   }
 }
