@@ -11,8 +11,8 @@ public class Player extends MapObject implements Movable {
 
   private final String id;
   private final int bombDurationInSeconds;
-  private final float speed;
-  private final int bombRange;
+  private float speed;
+  private int bombRange;
   private final GameState gameState;
   private boolean dead;
   private int killCount;
@@ -28,6 +28,35 @@ public class Player extends MapObject implements Movable {
     dead = false;
     killCount = 0;
     stateTime = 0f;
+  }
+
+  public void increasePlayerSpeed() {
+    if (speed >= Configuration.MAX_PLAYER_SPEED) {
+      return;
+    }
+    speed += Configuration.PLAYER_SPEED_INCREASE_VALUE;
+    System.out.println("player speed increased to " + speed);
+  }
+
+  public void decreasePlayerSpeed() {
+    if (speed <= 1f) {
+      return;
+    }
+    speed -= Configuration.PLAYER_SPEED_INCREASE_VALUE;
+    System.out.println("player speed decreased to " + speed);
+  }
+
+  public void increaseBombRange() {
+    bombRange += 1;
+    System.out.println("bomb range increased to " + bombRange);
+  }
+
+  public void decreaseBombRange() {
+    if (bombRange <= 0) {
+      return;
+    }
+    bombRange -= 1;
+    System.out.println("bomb range decreased to " + bombRange);
   }
 
   public String getId() {

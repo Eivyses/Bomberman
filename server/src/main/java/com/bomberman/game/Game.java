@@ -166,4 +166,32 @@ public class Game {
 
     playerOptional.ifPresent(Player::respawn);
   }
+
+  public void increasePlayerSpeed(final String playerId) {
+    final var playerOptional =
+        gameState.getPlayers().stream().filter(x -> x.getId().equals(playerId)).findFirst();
+
+    playerOptional.ifPresent(Player::increasePlayerSpeed);
+  }
+
+  public void decreasePlayerSpeed(final String playerId) {
+    final var playerOptional =
+        gameState.getPlayers().stream().filter(x -> x.getId().equals(playerId)).findFirst();
+
+    playerOptional.ifPresent(Player::decreasePlayerSpeed);
+  }
+
+  public void increaseBombRange(final String playerId) {
+    final var playerOptional =
+        gameState.getPlayers().stream().filter(x -> x.getId().equals(playerId)).findFirst();
+
+    playerOptional.ifPresent(Player::increaseBombRange);
+  }
+
+  public void decreaseBombRange(final String playerId) {
+    final var playerOptional =
+        gameState.getPlayers().stream().filter(x -> x.getId().equals(playerId)).findFirst();
+
+    playerOptional.ifPresent(Player::decreaseBombRange);
+  }
 }
