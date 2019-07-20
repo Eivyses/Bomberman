@@ -67,4 +67,20 @@ public class SocketClient {
               game.setGameState(gameState);
             });
   }
+
+  public void increaseBombRange() {
+    socket.emit("increaseBombRange");
+  }
+
+  public void decreaseBombRange() {
+    socket.emit("decreaseBombRange");
+  }
+
+  public void increasePlayerSpeed() {
+    socket.emit("increasePlayerSpeed");
+  }
+
+  public void decreasePlayerSpeed() {
+    socket.emit("decreasePlayerSpeed");
+  }
 }

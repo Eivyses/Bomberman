@@ -6,6 +6,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.mygdx.bomberman.drawings.DebugTooltip;
 import com.mygdx.bomberman.drawings.FrameRate;
 import com.mygdx.bomberman.drawings.ScoreBoard;
 import com.mygdx.bomberman.drawings.TextDrawable;
@@ -21,7 +22,9 @@ public class Bomberman extends ApplicationAdapter {
 
   private SpriteBatch batch;
   private TextDrawable frameRate;
+  private TextDrawable debugTooltip;
   private ScoreBoard scoreBoard;
+  private boolean debugTooltipActive = true;
 
   @Override
   public void create() {
@@ -30,7 +33,7 @@ public class Bomberman extends ApplicationAdapter {
 
     game = new Game();
     scoreBoard = new ScoreBoard(batch);
-
+    debugTooltip = new DebugTooltip(batch);
     drawer = new Drawer(batch);
 
     socketClient = new SocketClient(game);
@@ -42,7 +45,26 @@ public class Bomberman extends ApplicationAdapter {
 
     final float dt = Gdx.graphics.getDeltaTime();
 
-    if (Gdx.input.isKeyJustPressed(Keys.R)) {
+    if (Gdx.input.isKeyJustPressed(Keys.F1)) {
+      debugTooltipActive = !debugTooltipActive;
+    }
+
+    if (Gdx.input.isKeyJustPressed(Keys.F2) && debugTooltipActive) {
+      socketClient.increaseBombRange();
+    }
+    if (Gdx.input.isKeyJustPressed(Keys.F3) && debugTooltipActive) {
+      socketClient.decreaseBombRange();
+    }
+
+    if (Gdx.input.isKeyJustPressed(Keys.F4) && debugTooltipActive) {
+      socketClient.increasePlayerSpeed();
+    }
+
+    if (Gdx.input.isKeyJustPressed(Keys.F5) && debugTooltipActive) {
+      socketClient.decreasePlayerSpeed();
+    }
+
+    if (Gdx.input.isKeyJustPressed(Keys.F6) && debugTooltipActive) {
       socketClient.respawnPlayer();
     }
 
@@ -69,6 +91,9 @@ public class Bomberman extends ApplicationAdapter {
     frameRate.updateAndDraw();
     scoreBoard.setPlayers(game.getGameState().getPlayers());
     scoreBoard.updateAndDraw();
+    if (debugTooltipActive) {
+      debugTooltip.updateAndDraw();
+    }
 
     batch.end();
   }
