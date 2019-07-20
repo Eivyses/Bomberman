@@ -21,20 +21,17 @@ public class Game {
 
   private final PlayerFactory playerFactory;
   private final GameState gameState;
-  private final LevelFactory levelFactory;
 
   public Game() {
     playerFactory = new PlayerFactory();
-    levelFactory = new LevelFactory();
+    final LevelFactory levelFactory = new LevelFactory();
     gameState = levelFactory.createLevel();
   }
 
-  public String addPlayer(final String id) {
+  public void addPlayer(final String id) {
     final var newPlayer = playerFactory.createPlayer(id, gameState);
 
     gameState.getPlayers().add(newPlayer);
-
-    return newPlayer.getId();
   }
 
   public void removePlayer(final String id) {
@@ -52,12 +49,7 @@ public class Game {
       return;
     }
 
-    if (movement.getDt() > 0.9) {
-      System.out.println("WRONG DT " + movement.getDt());
-      return;
-    }
-
-    final float movementSpeed = movement.getDt() * player.getSpeed();
+    final float movementSpeed = player.getSpeed();
     final var position = movement.getDirection().buildPosition(player.getPosition(), movementSpeed);
     player.move(position);
 
@@ -69,27 +61,6 @@ public class Game {
             .findFirst();
 
     explosion.ifPresent($explosion -> updateDeathsAndScore($explosion.getPlayerId(), player));
-  }
-
-  public void movePlayer(final String playerId, final Position position) {
-    final var playerOptional =
-        gameState.getPlayers().stream().filter(x -> x.getId().equals(playerId)).findFirst();
-
-    if (playerOptional.isPresent()) {
-      final var player = playerOptional.get();
-      if (player.isDead()) {
-        return;
-      }
-      player.move(position);
-
-      final var explosion =
-          gameState.getBombExplosions().stream()
-              .filter(
-                  $explosion -> Collisions.willCollide(player, player.getPosition(), $explosion))
-              .findFirst();
-
-      explosion.ifPresent($explosion -> updateDeathsAndScore($explosion.getPlayerId(), player));
-    }
   }
 
   private void updateDeathsAndScore(final String killerId, final Player player) {
