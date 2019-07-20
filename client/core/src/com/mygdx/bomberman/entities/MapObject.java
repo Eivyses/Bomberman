@@ -22,4 +22,9 @@ public abstract class MapObject {
   public void setPosition(final Position position) {
     this.position = position;
   }
+
+  @Override
+  public String toString() {
+    return "MapObject " + "position= " + position.toString();
+  }
 }

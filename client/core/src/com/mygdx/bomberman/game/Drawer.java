@@ -1,12 +1,15 @@
 package com.mygdx.bomberman.game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.mygdx.bomberman.constants.Configuration;
 import com.mygdx.bomberman.entities.Bomb;
 import com.mygdx.bomberman.entities.BombExplosion;
 import com.mygdx.bomberman.entities.Brick;
+import com.mygdx.bomberman.entities.MapObject;
 import com.mygdx.bomberman.entities.Player;
 import com.mygdx.bomberman.entities.Wall;
 import java.util.List;
@@ -66,7 +69,7 @@ public class Drawer {
   }
 
   private void drawBrick(final Brick brick) {
-    batch.draw(brickTexture, brick.getPosition().getX(), brick.getPosition().getY());
+    drawBaseTexture(brickTexture, brick);
   }
 
   private void drawPlayers(final List<Player> players) {
@@ -78,16 +81,14 @@ public class Drawer {
   }
 
   private void drawExplosion(final BombExplosion explosion) {
-    batch.draw(
-        bombExplosionTexture, explosion.getPosition().getX(), explosion.getPosition().getY());
+    drawBaseTexture(bombExplosionTexture, explosion);
   }
 
   private void drawPlayer(final Player player) {
     if (player.isDead()) {
-      batch.draw(bombExplosionTexture, player.getPosition().getX(), player.getPosition().getY());
+      drawBaseTexture(bombExplosionTexture, player);
     } else {
-      final TextureRegion currentFrame = movingPlayer.getKeyFrame(player.getStateTime(), true);
-      batch.draw(currentFrame, player.getPosition().getX(), player.getPosition().getY());
+      drawPlayerTexture(player);
     }
   }
 
@@ -96,7 +97,7 @@ public class Drawer {
   }
 
   private void drawBomb(final Bomb bomb) {
-    batch.draw(bombTexture, bomb.getPosition().getX(), bomb.getPosition().getY());
+    drawBaseTexture(bombTexture, bomb);
   }
 
   private void drawWalls(final List<Wall> walls) {
@@ -104,12 +105,54 @@ public class Drawer {
   }
 
   private void drawWall(final Wall wall) {
-    final float x = wall.getPosition().getX();
-    final float y = wall.getPosition().getY();
-    batch.draw(wallTexture, x, y);
+    drawBaseTexture(wallTexture, wall);
   }
 
   private void drawTerrain() {
-    batch.draw(terrainTexture, 0, 0, 480, 352);
+    batch.draw(terrainTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+  }
+
+  private void drawBaseTexture(final Texture texture, final MapObject mapObject) {
+    final float x = mapObject.getPosition().getX();
+    final float y = mapObject.getPosition().getY();
+    /* so, what's happening here?
+     * server calculates everything using it's on grid system, for ex. simple map wall or
+     * brick has a size of 32x32
+     * What happens when we move that value to front?
+     * We need to show a texture on it based on current resolution. that's what this function
+     * is doing. it finds real starting point for object by knowing how many of those should be
+     * present in line or row and then stretches texture based on resolution.
+     * */
+    final float objectWidthScaled = Gdx.graphics.getWidth() / Configuration.GAME_COLUMNS;
+    final float objectHeightScaled = Gdx.graphics.getHeight() / Configuration.GAME_ROWS;
+    batch.draw(
+        texture,
+        x / Configuration.TEXTURE_SIZE * objectWidthScaled,
+        y / Configuration.TEXTURE_SIZE * objectHeightScaled,
+        objectWidthScaled,
+        objectHeightScaled);
+  }
+
+  private void drawPlayerTexture(final Player player) {
+    final float x = player.getPosition().getX();
+    final float y = player.getPosition().getY();
+    final TextureRegion currentFrame = movingPlayer.getKeyFrame(player.getStateTime(), true);
+    final float playerHeightScaled =
+        Gdx.graphics.getHeight()
+            / (Configuration.TEXTURE_SIZE
+                / Configuration.PLAYER_TEXTURE_HEIGHT
+                * Configuration.GAME_ROWS);
+    final float playerWidthScaled =
+        Gdx.graphics.getWidth()
+            / (Configuration.TEXTURE_SIZE
+                / Configuration.PLAYER_TEXTURE_WIDTH
+                * Configuration.GAME_COLUMNS);
+
+    batch.draw(
+        currentFrame,
+        x / Configuration.PLAYER_TEXTURE_WIDTH * playerWidthScaled,
+        y / Configuration.PLAYER_TEXTURE_HEIGHT * playerHeightScaled,
+        playerWidthScaled,
+        playerHeightScaled);
   }
 }

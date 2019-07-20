@@ -21,4 +21,9 @@ public class Position extends JsonSerializable {
   public float getY() {
     return y;
   }
+
+  @Override
+  public String toString() {
+    return "x=" + x + ", y=" + y;
+  }
 }

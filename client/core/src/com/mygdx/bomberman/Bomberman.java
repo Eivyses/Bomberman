@@ -42,9 +42,49 @@ public class Bomberman extends ApplicationAdapter {
   @Override
   public void render() {
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    initDebugButtons();
+    initControls();
 
+    batch.begin();
+
+    drawer.drawGame(game.getGameState());
+
+    frameRate.updateAndDraw();
+    scoreBoard.setPlayers(game.getGameState().getPlayers());
+    scoreBoard.updateAndDraw();
+    if (debugTooltipActive) {
+      debugTooltip.updateAndDraw();
+    }
+
+    batch.end();
+  }
+
+  @Override
+  public void resize(final int width, final int height) {
+    frameRate.resize(width, height);
+  }
+
+  private void initControls() {
     final float dt = Gdx.graphics.getDeltaTime();
 
+    if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+      socketClient.move(Direction.UP, dt);
+    }
+    if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+      socketClient.move(Direction.DOWN, dt);
+    }
+    if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+      socketClient.move(Direction.LEFT, dt);
+    }
+    if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+      socketClient.move(Direction.RIGHT, dt);
+    }
+    if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+      socketClient.placeBomb();
+    }
+  }
+
+  private void initDebugButtons() {
     if (Gdx.input.isKeyJustPressed(Keys.F1)) {
       debugTooltipActive = !debugTooltipActive;
     }
@@ -67,35 +107,6 @@ public class Bomberman extends ApplicationAdapter {
     if (Gdx.input.isKeyJustPressed(Keys.F6) && debugTooltipActive) {
       socketClient.respawnPlayer();
     }
-
-    if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-      socketClient.move(Direction.UP, dt);
-    }
-    if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-      socketClient.move(Direction.DOWN, dt);
-    }
-    if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-      socketClient.move(Direction.LEFT, dt);
-    }
-    if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-      socketClient.move(Direction.RIGHT, dt);
-    }
-    if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-      socketClient.placeBomb();
-    }
-
-    batch.begin();
-
-    drawer.drawGame(game.getGameState());
-
-    frameRate.updateAndDraw();
-    scoreBoard.setPlayers(game.getGameState().getPlayers());
-    scoreBoard.updateAndDraw();
-    if (debugTooltipActive) {
-      debugTooltip.updateAndDraw();
-    }
-
-    batch.end();
   }
 
   @Override

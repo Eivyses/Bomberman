@@ -7,7 +7,12 @@ import com.mygdx.bomberman.entities.Position;
 public class DebugTooltip extends TextDrawable {
 
   public DebugTooltip(final SpriteBatch batch) {
-    super(batch, "", new Position(300, Gdx.graphics.getHeight() - 3));
+    super(
+        batch,
+        "",
+        new Position(
+            Gdx.graphics.getWidth() - (Gdx.graphics.getWidth() / 100 * 15),
+            Gdx.graphics.getHeight() - (Gdx.graphics.getHeight() / 100)));
   }
 
   @Override
