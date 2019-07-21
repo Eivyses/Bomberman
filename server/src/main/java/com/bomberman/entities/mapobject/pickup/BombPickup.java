@@ -13,4 +13,9 @@ public class BombPickup extends Pickup {
   public void apply(final Player player) {
     player.increaseMaxBombCount();
   }
+
+  @Override
+  public String getClassName() {
+    return BombPickup.class.getSimpleName();
+  }
 }

@@ -60,7 +60,7 @@ public class Game {
 
     final var collidePickup =
         Collisions.getFirstPickupCollision(
-            player, position, new ArrayList<>(gameState.getBombPickups()));
+            player, position, new ArrayList<>(gameState.getPickups()));
 
     collidePickup.ifPresent($pickup -> applyPickupAndRemove($pickup, player));
 
@@ -77,7 +77,7 @@ public class Game {
   private void applyPickupAndRemove(final Pickup pickup, final Player player) {
     pickup.apply(player);
     if (pickup instanceof BombPickup) {
-      gameState.getBombPickups().remove(pickup);
+      gameState.getPickups().remove(pickup);
     }
   }
 
@@ -179,7 +179,7 @@ public class Game {
 
     bricksInExplosion.stream()
         .map(this::createPickupAndRemoveBrick)
-        .forEach($pickup -> gameState.getBombPickups().add($pickup));
+        .forEach($pickup -> gameState.getPickups().add($pickup));
 
     gameState.getBombExplosions().removeAll(explosions);
   }

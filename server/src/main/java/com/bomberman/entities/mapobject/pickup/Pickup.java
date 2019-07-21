@@ -15,6 +15,8 @@ public abstract class Pickup extends MapObject {
 
   public abstract void apply(Player player);
 
+  public abstract String getClassName();
+
   @Override
   public int getTextureWidth() {
     return Configuration.TEXTURE_SIZE;
