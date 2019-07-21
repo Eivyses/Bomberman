@@ -12,6 +12,8 @@ import com.mygdx.bomberman.entities.mapobject.Brick;
 import com.mygdx.bomberman.entities.mapobject.MapObject;
 import com.mygdx.bomberman.entities.mapobject.Player;
 import com.mygdx.bomberman.entities.mapobject.Wall;
+import com.mygdx.bomberman.entities.mapobject.pickup.BombPickup;
+import com.mygdx.bomberman.entities.mapobject.pickup.Pickup;
 import java.util.List;
 
 public class Drawer {
@@ -22,6 +24,7 @@ public class Drawer {
   private final Texture terrainTexture;
   private final Texture movingPlayerSheet;
   private final Texture brickTexture;
+  private final Texture bombPickupTexture;
   private final Animation<TextureRegion> movingPlayer;
   private final SpriteBatch batch;
 
@@ -37,6 +40,7 @@ public class Drawer {
     wallTexture = new Texture("textures\\Wall.png");
     terrainTexture = new Texture("textures\\Terrain.png");
     brickTexture = new Texture("textures\\Brick.png");
+    bombPickupTexture = new Texture("textures\\Pickup_bomb.png");
 
     final TextureRegion[][] tmp =
         TextureRegion.split(
@@ -61,7 +65,17 @@ public class Drawer {
     drawExplosions(gameState.getBombExplosions());
     drawWalls(gameState.getWalls());
     drawBombs(gameState.getBombs());
+    drawBombPickups(gameState.getBombPickups());
+
     drawPlayers(gameState.getPlayers());
+  }
+
+  private void drawBombPickups(final List<BombPickup> pickups) {
+    pickups.forEach(this::drawBombPickup);
+  }
+
+  private void drawBombPickup(final Pickup pickup) {
+    drawBaseTexture(bombPickupTexture, pickup);
   }
 
   private void drawBricks(final List<Brick> bricks) {

@@ -5,7 +5,7 @@ import com.mygdx.bomberman.entities.mapobject.BombExplosion;
 import com.mygdx.bomberman.entities.mapobject.Brick;
 import com.mygdx.bomberman.entities.mapobject.Player;
 import com.mygdx.bomberman.entities.mapobject.Wall;
-import com.mygdx.bomberman.entities.mapobject.pickup.Pickup;
+import com.mygdx.bomberman.entities.mapobject.pickup.BombPickup;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +15,7 @@ public class GameState {
   private final List<Wall> walls;
   private final List<BombExplosion> bombExplosions;
   private final List<Brick> bricks;
-  private final List<Pickup> pickups;
+  private final List<BombPickup> bombPickups;
 
   public GameState() {
     players = new ArrayList<>();
@@ -23,11 +23,11 @@ public class GameState {
     walls = new ArrayList<>();
     bombExplosions = new ArrayList<>();
     bricks = new ArrayList<>();
-    pickups = new ArrayList<>();
+    bombPickups = new ArrayList<>();
   }
 
-  public List<Pickup> getPickups() {
-    return pickups;
+  public List<BombPickup> getBombPickups() {
+    return bombPickups;
   }
 
   public List<Player> getPlayers() {
