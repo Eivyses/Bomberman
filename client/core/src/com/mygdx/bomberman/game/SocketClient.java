@@ -1,9 +1,12 @@
 package com.mygdx.bomberman.game;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.mygdx.bomberman.constants.Configuration;
+import com.mygdx.bomberman.deserializer.PickupDeserializer;
 import com.mygdx.bomberman.entities.Direction;
 import com.mygdx.bomberman.entities.Movement;
+import com.mygdx.bomberman.entities.mapobject.pickup.Pickup;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import java.net.URISyntaxException;
@@ -11,10 +14,11 @@ import java.net.URISyntaxException;
 public class SocketClient {
   private Socket socket;
   private final Game game;
+  private final Gson gson;
 
   public SocketClient(final Game game) {
+    gson = new GsonBuilder().registerTypeAdapter(Pickup.class, new PickupDeserializer()).create();
     this.game = game;
-
     connectSocket();
     configureListeners();
   }
@@ -56,14 +60,13 @@ public class SocketClient {
         .on(
             "connectNewPlayerSuccess",
             args -> {
-              String playerId = new Gson().fromJson(args[0].toString(), String.class);
+              String playerId = gson.fromJson(args[0].toString(), String.class);
               game.setPlayerId(playerId);
             })
         .on(
             "getGameState",
             args -> {
-              //                            System.out.println("Get game state");
-              final GameState gameState = new Gson().fromJson(args[0].toString(), GameState.class);
+              final GameState gameState = gson.fromJson(args[0].toString(), GameState.class);
               game.setGameState(gameState);
             });
   }

@@ -62,20 +62,22 @@ public class Drawer {
   public void drawGame(final GameState gameState) {
     drawTerrain();
     drawBricks(gameState.getBricks());
-    drawExplosions(gameState.getBombExplosions());
     drawWalls(gameState.getWalls());
     drawBombs(gameState.getBombs());
-    drawBombPickups(gameState.getBombPickups());
+    drawPickups(gameState.getPickups());
+    drawExplosions(gameState.getBombExplosions());
 
     drawPlayers(gameState.getPlayers());
   }
 
-  private void drawBombPickups(final List<BombPickup> pickups) {
-    pickups.forEach(this::drawBombPickup);
+  private void drawPickups(final List<Pickup> pickups) {
+    pickups.forEach(this::drawPickup);
   }
 
-  private void drawBombPickup(final Pickup pickup) {
-    drawBaseTexture(bombPickupTexture, pickup);
+  private void drawPickup(final Pickup pickup) {
+    if (pickup instanceof BombPickup) {
+      drawBaseTexture(bombPickupTexture, pickup);
+    }
   }
 
   private void drawBricks(final List<Brick> bricks) {
