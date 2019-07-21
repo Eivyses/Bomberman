@@ -68,7 +68,7 @@ public class Player extends MapObject implements Movable {
 
   public void increaseMaxBombCount() {
     maxBombCount++;
-    System.out.println("max bomb count increased to " + bombRange);
+    System.out.println("max bomb count increased to " + maxBombCount);
   }
 
   public void incrementPlacedBombCount() {
@@ -147,7 +147,6 @@ public class Player extends MapObject implements Movable {
         || Collisions.willCollide(this, position, obstacles)) {
       return;
     }
-
     setPosition(position);
   }
 

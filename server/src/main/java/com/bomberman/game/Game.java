@@ -4,10 +4,14 @@ import com.bomberman.entities.Movement;
 import com.bomberman.entities.Position;
 import com.bomberman.entities.mapobject.Bomb;
 import com.bomberman.entities.mapobject.BombExplosion;
+import com.bomberman.entities.mapobject.Brick;
 import com.bomberman.entities.mapobject.MapObject;
 import com.bomberman.entities.mapobject.movable.Player;
+import com.bomberman.entities.mapobject.pickup.BombPickup;
+import com.bomberman.entities.mapobject.pickup.Pickup;
 import com.bomberman.exception.PlayerNotFoundException;
 import com.bomberman.factories.LevelFactory;
+import com.bomberman.factories.PickupFactory;
 import com.bomberman.factories.PlayerFactory;
 import com.bomberman.utils.Collisions;
 import java.util.ArrayList;
@@ -19,10 +23,12 @@ import java.util.stream.Collectors;
 public class Game {
 
   private final PlayerFactory playerFactory;
+  private final PickupFactory pickupFactory;
   private final GameState gameState;
 
   public Game() {
     playerFactory = new PlayerFactory();
+    pickupFactory = new PickupFactory();
     final LevelFactory levelFactory = new LevelFactory();
     gameState = levelFactory.createLevel();
   }
@@ -52,6 +58,12 @@ public class Game {
     final var position = movement.getDirection().buildPosition(player.getPosition(), movementSpeed);
     player.move(position);
 
+    final var collidePickup =
+        Collisions.getFirstPickupCollision(
+            player, position, new ArrayList<>(gameState.getBombPickups()));
+
+    collidePickup.ifPresent($pickup -> applyPickupAndRemove($pickup, player));
+
     player.addStateTime(movement.getDt());
 
     final var explosion =
@@ -60,6 +72,13 @@ public class Game {
             .findFirst();
 
     explosion.ifPresent($explosion -> updateDeathsAndScore($explosion.getPlayerId(), player));
+  }
+
+  private void applyPickupAndRemove(final Pickup pickup, final Player player) {
+    pickup.apply(player);
+    if (pickup instanceof BombPickup) {
+      gameState.getBombPickups().remove(pickup);
+    }
   }
 
   private void updateDeathsAndScore(final String killerId, final Player player) {
@@ -158,8 +177,16 @@ public class Game {
                                 Objects.equals($brick.getPosition(), $explosion.getPosition())))
             .collect(Collectors.toList());
 
-    gameState.getBricks().removeAll(bricksInExplosion);
+    bricksInExplosion.stream()
+        .map(this::createPickupAndRemoveBrick)
+        .forEach($pickup -> gameState.getBombPickups().add($pickup));
+
     gameState.getBombExplosions().removeAll(explosions);
+  }
+
+  private BombPickup createPickupAndRemoveBrick(final Brick brick) {
+    gameState.getBricks().remove(brick);
+    return pickupFactory.createBombPickup(brick);
   }
 
   private Player getPlayer(final String playerId) {

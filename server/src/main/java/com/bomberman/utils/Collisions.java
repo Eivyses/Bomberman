@@ -3,9 +3,11 @@ package com.bomberman.utils;
 import com.bomberman.constants.Configuration;
 import com.bomberman.entities.Position;
 import com.bomberman.entities.mapobject.MapObject;
+import com.bomberman.entities.mapobject.pickup.Pickup;
 import com.bomberman.game.GameState;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class Collisions {
 
@@ -77,6 +79,13 @@ public class Collisions {
   public static boolean willCollide(
       final MapObject mapObject, final Position newPosition, final List<MapObject> obstacles) {
     return obstacles.stream().anyMatch($obstacle -> willCollide(mapObject, newPosition, $obstacle));
+  }
+
+  public static Optional<Pickup> getFirstPickupCollision(
+      final MapObject mapObject, final Position newPosition, final List<Pickup> pickups) {
+    return pickups.stream()
+        .filter($pickup -> willCollide(mapObject, newPosition, $pickup))
+        .findFirst();
   }
 
   public static boolean willCollide(
