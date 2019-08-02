@@ -18,6 +18,7 @@
     "Phaser3-example"
   ],
   "devDependencies": {
+    "@types/socket.io-client": "^1.4.32",
     "expose-loader": "0.7.5",
     "ts-loader": "6.0.4",
     "typescript": "3.5.2",
@@ -26,7 +27,8 @@
     "webpack-dev-server": "3.7.2"
   },
   "dependencies": {
-    "phaser": "3.18.1"
+    "phaser": "3.18.1",
+    "socket.io-client": "^2.2.0"
   },
   "scripts": {
     "dev": "webpack --mode development && webpack-dev-server --mode development",

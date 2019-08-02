@@ -6,6 +6,7 @@
 
 import "phaser";
 import { MainScene } from "./scenes/mainScene";
+import * as io from 'socket.io-client';
 
 // main game configuration
 const config: Phaser.Types.Core.GameConfig = {
@@ -32,4 +33,7 @@ export class Game extends Phaser.Game {
 // when the page is loaded, create our game instance
 window.addEventListener("load", () => {
   var game = new Game(config);
+  console.log('game is online');
+
+  const socket = io('http://localhost:3000');
 });
