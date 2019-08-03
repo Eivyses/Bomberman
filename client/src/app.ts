@@ -11,7 +11,7 @@ const config: Phaser.Types.Core.GameConfig = {
   scene: [WelcomeScene, GameScene],
   backgroundColor: '#18216D'
 };
-export class StarfallGame extends Phaser.Game {
+export class BombermanGame extends Phaser.Game {
   constructor(config: Phaser.Types.Core.GameConfig) {
     super(config);
   }
