@@ -41,6 +41,7 @@ class SocketServer {
         String.class,
         (client, data, ackRequest) -> {
           final var playerId = getPlayerId(client);
+          System.out.println("New player connected: " + playerId);
           game.addPlayer(playerId);
           client.sendEvent("connectNewPlayerSuccess", playerId);
           server.getBroadcastOperations().sendEvent("getGameState", game.getGameState());
