@@ -39,6 +39,10 @@ public class Game {
     gameState.getPlayers().add(newPlayer);
   }
 
+  public boolean playerExists(final String id) {
+    return gameState.getPlayers().stream().anyMatch(player -> player.getId().equals(id));
+  }
+
   public void removePlayer(final String id) {
     gameState.getPlayers().removeIf(x -> x.getId().equals(id));
   }

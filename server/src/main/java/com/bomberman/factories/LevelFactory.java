@@ -30,9 +30,8 @@ public class LevelFactory {
     final GameState gameState = new GameState();
     for (int y = 0; y < HEIGHT; y++) {
       for (int x = 0; x < WIDTH; x++) {
-        final float height = HEIGHT - y - 1;
         final Position position =
-            new Position(x * Configuration.TEXTURE_SIZE, height * Configuration.TEXTURE_SIZE);
+            new Position(x * Configuration.TEXTURE_SIZE, y * Configuration.TEXTURE_SIZE);
         switch (level[y][x]) {
           case 1:
             gameState.getWalls().add(new Wall(position));
