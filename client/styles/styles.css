@@ -1,0 +1,17 @@
+html,
+body,
+#game {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #111;
+  color: #eee;
+  font: caption;
+}
+
+#game {
+  background: black;
+}

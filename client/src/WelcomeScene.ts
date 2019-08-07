@@ -1,4 +1,5 @@
 import 'phaser';
+import { TextUtil } from './util/TextUtil';
 
 export class WelcomeScene extends Phaser.Scene {
   constructor() {
@@ -9,16 +10,10 @@ export class WelcomeScene extends Phaser.Scene {
 
   create(): void {
     var titleText: string = 'Bomberman!';
-    this.add.text(200, 200, titleText, {
-      font: '64px Arial Bold',
-      fill: '#FBFBAC'
-    });
+    this.add.text(200, 200, titleText, TextUtil.HEADER_WHITE_TEXT);
 
     var hintText: string = 'Click to start';
-    this.add.text(300, 350, hintText, {
-      font: '24px Arial Bold',
-      fill: '#FBFBAC'
-    });
+    this.add.text(300, 350, hintText, TextUtil.STANDARD_WHITE_TEXT);
 
     this.input.on(
       'pointerdown',
