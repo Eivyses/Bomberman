@@ -1,3 +1,4 @@
+import { Pickup } from '../entities/mapobject/pickup/Pickup';
 import { Player } from '../entities/mapobject/Player';
 import { Wall } from '../entities/mapobject/Wall';
 import { Bomb } from './../entities/mapobject/Bomb';
@@ -14,7 +15,7 @@ export class Drawer {
   private brickTextures: Phaser.GameObjects.Image[] = [];
   private explosionTextures: Phaser.GameObjects.Image[] = [];
   private terrainTexture: Phaser.GameObjects.Image;
-  private pickupBombTextures: Phaser.GameObjects.Image[] = [];
+  private pickupTextures: Phaser.GameObjects.Image[] = [];
 
   constructor(game: Phaser.Scene) {
     this.game = game;
@@ -39,12 +40,25 @@ export class Drawer {
     this.drawWalls(gameState.walls);
     this.drawBombs(gameState.bombs);
     this.drawExplosions(gameState.bombExplosions);
+    this.drawPickups(gameState.pickups);
 
     this.drawPlayers(gameState.players);
   }
 
+  drawPickups(pickups: Pickup[]): void {
+    pickups.forEach(pickup => this.drawPickup(pickup));
+  }
+
+  drawPickup(pickup: Pickup): void {
+    this.pickupTextures.push(
+      this.game.add
+        .image(pickup.position.x, pickup.position.y, pickup.className)
+        .setOrigin(0, 0)
+    );
+  }
+
   drawBricks(bricks: Brick[]): void {
-    bricks.forEach(bricks => this.drawBrick(bricks));
+    bricks.forEach(brick => this.drawBrick(brick));
   }
   drawBrick(brick: Brick): void {
     this.brickTextures.push(
@@ -55,7 +69,7 @@ export class Drawer {
   }
 
   drawBombs(bombs: Bomb[]): void {
-    bombs.forEach(bombs => this.drawBomb(bombs));
+    bombs.forEach(bomb => this.drawBomb(bomb));
   }
   drawBomb(bomb: Bomb): void {
     this.bombTextures.push(
@@ -66,9 +80,7 @@ export class Drawer {
   }
 
   drawExplosions(bombExplosions: BombExplosion[]): void {
-    bombExplosions.forEach(bombExplosions =>
-      this.drawExplosion(bombExplosions)
-    );
+    bombExplosions.forEach(bombExplosion => this.drawExplosion(bombExplosion));
   }
   drawExplosion(bombExplosion: BombExplosion): void {
     this.explosionTextures.push(
@@ -79,12 +91,13 @@ export class Drawer {
   }
 
   drawPlayers(players: Player[]): void {
-    players.forEach(players => this.drawPlayer(players));
+    players.forEach(player => this.drawPlayer(player));
   }
   drawPlayer(player: Player): void {
+    const texture: string = player.dead ? 'explosion' : 'player';
     this.playerTextures.push(
       this.game.add
-        .image(player.position.x, player.position.y, 'player')
+        .image(player.position.x, player.position.y, texture)
         .setOrigin(0, 0)
     );
   }
@@ -109,7 +122,7 @@ export class Drawer {
         this.playerTextures,
         this.brickTextures,
         this.explosionTextures,
-        this.pickupBombTextures
+        this.pickupTextures
       )
       .forEach((texture: Phaser.GameObjects.Image) => texture.destroy());
   }

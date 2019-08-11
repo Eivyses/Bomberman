@@ -1,9 +1,10 @@
 import * as io from 'socket.io-client';
 import { Configuration } from '../constant/Configuration';
+import { Direction } from './../entities/Direction';
 import { GameState } from './GameState';
 import { MainGame } from './MainGame';
 
-export class Server {
+export class SocketClient {
   private socket: SocketIOClient.Socket;
   private mainGame: MainGame;
 
@@ -25,6 +26,46 @@ export class Server {
     this.socket.connect();
   }
 
+  public move(direction: Direction) {
+    let magic = {
+      direction: direction,
+      dt: 0.005
+    };
+    this.socket.emit('movePlayer', magic);
+  }
+
+  placeBomb() {
+    this.socket.emit('placeBomb');
+  }
+
+  disconnnect() {
+    this.socket.emit('disconnectPlayer');
+  }
+
+  respawnPlayer(): void {
+    this.socket.emit('respawnPlayer');
+  }
+
+  increaseBombRange(): void {
+    this.socket.emit('increaseBombRange');
+  }
+
+  decreaseBombRange(): void {
+    this.socket.emit('decreaseBombRange');
+  }
+
+  increasePlayerSpeed(): void {
+    this.socket.emit('increasePlayerSpeed');
+  }
+
+  dereasePlayerSpeed(): void {
+    this.socket.emit('dereasePlayerSpeed');
+  }
+
+  increaseMaxBombCount(): void {
+    this.socket.emit('increaseMaxBombCount');
+  }
+
   private configureListeners(): void {
     this.socket.addEventListener('connect', () => {
       this.socket.emit('connectNewPlayer');
@@ -43,7 +84,6 @@ export class Server {
     });
 
     this.socket.addEventListener('getGameState', (gameState: GameState) => {
-      console.log(gameState);
       this.mainGame.gameState = gameState;
     });
   }
