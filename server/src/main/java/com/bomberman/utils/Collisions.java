@@ -4,7 +4,6 @@ import com.bomberman.constants.Configuration;
 import com.bomberman.entities.Position;
 import com.bomberman.entities.mapobject.MapObject;
 import com.bomberman.entities.mapobject.pickup.Pickup;
-import com.bomberman.game.GameState;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -15,25 +14,25 @@ public class Collisions {
       final int range,
       final MapObject fromObject,
       final MapObject toObject,
-      final GameState gameState) {
+      final List<MapObject> collideObjects) {
 
-    if (isInExplosionRange(range, fromObject, toObject, gameState, true, true)) {
+    if (isInExplosionRange(range, fromObject, toObject, collideObjects, true, true)) {
       return true;
     }
-    if (isInExplosionRange(range, fromObject, toObject, gameState, false, true)) {
+    if (isInExplosionRange(range, fromObject, toObject, collideObjects, false, true)) {
       return true;
     }
-    if (isInExplosionRange(range, fromObject, toObject, gameState, true, false)) {
+    if (isInExplosionRange(range, fromObject, toObject, collideObjects, true, false)) {
       return true;
     }
-    return isInExplosionRange(range, fromObject, toObject, gameState, false, false);
+    return isInExplosionRange(range, fromObject, toObject, collideObjects, false, false);
   }
 
   private static boolean isInExplosionRange(
       final int range,
       final MapObject fromObject,
       final MapObject toObject,
-      final GameState gameState,
+      final List<MapObject> collideObjects,
       final boolean isDirectionDown,
       final boolean xAxis) {
     for (int i = 1; i <= range; i++) {
@@ -57,10 +56,12 @@ public class Collisions {
 
       final var position = new Position(xPos, yPos);
 
-      final boolean willHitWall =
-          gameState.getWalls().stream()
-              .anyMatch(wall -> Collisions.isAtSameSquare(wall.getPosition(), position));
-      if (willHitWall) {
+      final boolean willHitCollideObject =
+          collideObjects.stream()
+              .anyMatch(
+                  collideObject ->
+                      Collisions.isAtSameSquare(collideObject.getPosition(), position));
+      if (willHitCollideObject) {
         break;
       }
 

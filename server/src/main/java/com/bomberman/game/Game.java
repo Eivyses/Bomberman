@@ -125,9 +125,13 @@ public class Game {
     player.decrementPlacedBombCount();
     final var bombRange = bomb.getBombRange();
     gameState.getBombs().remove(bomb);
+
     final List<Bomb> bombsInExplosionRange =
         gameState.getBombs().stream()
-            .filter($bomb -> Collisions.isInExplosionRange(bombRange, bomb, $bomb, gameState))
+            .filter(
+                $bomb ->
+                    Collisions.isInExplosionRange(
+                        bombRange, bomb, $bomb, gameState.getCollideObjects()))
             .collect(Collectors.toList());
 
     gameState.getBombExplosions().addAll(BombExplosion.of(bomb, bombId, playerId, gameState));

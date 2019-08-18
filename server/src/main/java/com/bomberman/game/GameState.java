@@ -8,6 +8,7 @@ import com.bomberman.entities.mapobject.Wall;
 import com.bomberman.entities.mapobject.movable.Player;
 import com.bomberman.entities.mapobject.pickup.Pickup;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -55,5 +56,9 @@ public class GameState {
 
   public List<MapObject> getObstacles() {
     return Stream.concat(walls.stream(), bricks.stream()).collect(Collectors.toList());
+  }
+
+  public List<MapObject> getCollideObjects() {
+    return Stream.of(walls).flatMap(Collection::stream).collect(Collectors.toList());
   }
 }
