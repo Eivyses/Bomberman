@@ -9,6 +9,7 @@ import com.bomberman.entities.mapobject.MapObject;
 import com.bomberman.entities.mapobject.movable.Player;
 import com.bomberman.entities.mapobject.pickup.BombPickup;
 import com.bomberman.entities.mapobject.pickup.Pickup;
+import com.bomberman.exception.PlayerAlreadyExistsException;
 import com.bomberman.exception.PlayerNotFoundException;
 import com.bomberman.factories.LevelFactory;
 import com.bomberman.factories.PickupFactory;
@@ -27,16 +28,26 @@ public class Game {
   private final GameState gameState;
 
   public Game() {
-    playerFactory = new PlayerFactory();
-    pickupFactory = new PickupFactory();
-    final LevelFactory levelFactory = new LevelFactory();
-    gameState = levelFactory.createLevel();
+    this(new LevelFactory().createLevel());
   }
 
-  public void addPlayer(final String id) {
-    final var newPlayer = playerFactory.createPlayer(id, gameState);
+  Game(final GameState gameState) {
+    playerFactory = new PlayerFactory();
+    pickupFactory = new PickupFactory();
+    this.gameState = gameState;
+  }
+
+  public void addPlayer(final String playerId) {
+    if (playerExists(playerId)) {
+      throw new PlayerAlreadyExistsException(playerId);
+    }
+    final var newPlayer = playerFactory.createPlayer(playerId, gameState);
 
     gameState.getPlayers().add(newPlayer);
+  }
+
+  public boolean playerExists(final String id) {
+    return gameState.getPlayers().stream().anyMatch(player -> player.getId().equals(id));
   }
 
   public void removePlayer(final String id) {

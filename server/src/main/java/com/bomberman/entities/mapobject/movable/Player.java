@@ -108,7 +108,7 @@ public class Player extends MapObject implements Movable {
   }
 
   public void respawn() {
-    setPosition(new Position(0, 0));
+    setPosition(new Position(0, Configuration.MAP_HEIGHT - Configuration.PLAYER_TEXTURE_HEIGHT));
     dead = false;
     System.out.println(String.format("Player %s resurrected", id));
   }

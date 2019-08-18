@@ -19,11 +19,11 @@ public enum Direction {
     switch (this) {
       case UP:
         x = playerPosition.getX();
-        y = playerPosition.getY() + movementSpeed;
+        y = playerPosition.getY() - movementSpeed;
         break;
       case DOWN:
         x = playerPosition.getX();
-        y = playerPosition.getY() - movementSpeed;
+        y = playerPosition.getY() + movementSpeed;
         break;
       case LEFT:
         x = playerPosition.getX() - movementSpeed;

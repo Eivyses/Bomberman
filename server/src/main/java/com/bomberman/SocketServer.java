@@ -41,6 +41,12 @@ class SocketServer {
         String.class,
         (client, data, ackRequest) -> {
           final var playerId = getPlayerId(client);
+          if (game.playerExists(playerId)) {
+            client.sendEvent("connectNewPlayerSuccess", playerId);
+            server.getBroadcastOperations().sendEvent("getGameState", game.getGameState());
+            return;
+          }
+          System.out.println("New player connected: " + playerId);
           game.addPlayer(playerId);
           client.sendEvent("connectNewPlayerSuccess", playerId);
           server.getBroadcastOperations().sendEvent("getGameState", game.getGameState());
@@ -53,6 +59,7 @@ class SocketServer {
           final var playerId = getPlayerId(client);
           game.removePlayer(playerId);
           client.sendEvent("disconnectPlayerSuccess");
+          System.out.println("Player disconnected: " + playerId);
           server.getBroadcastOperations().sendEvent("getGameState", game.getGameState());
         });
 

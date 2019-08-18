@@ -16,6 +16,6 @@ public class BombPickup extends Pickup {
 
   @Override
   public String getClassName() {
-    return BombPickup.class.getSimpleName();
+    return "pickup_bomb";
   }
 }

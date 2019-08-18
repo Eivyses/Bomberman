@@ -1,7 +1,0 @@
-{
-	"url": "http://localhost",
-    "port": 5050,
-	"userIdString": "userId",
-	"keyClientString": "keyClient",
-	"keyServerString": "keyServer"
-}

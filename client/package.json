@@ -1,0 +1,23 @@
+{
+  "name": "bombermanjsclient",
+  "version": "1.0.0",
+  "description": "bomberman client",
+  "scripts": {
+    "start": "webpack && webpack-dev-server"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/socket.io-client": "^1.4.32",
+    "live-server": "^1.2.1",
+    "ts-loader": "^5.3.0",
+    "typescript": "^3.1.6",
+    "webpack": "^4.26.0",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "^3.7.2"
+  },
+  "dependencies": {
+    "phaser": "3.18.1",
+    "socket.io-client": "^2.2.0"
+  }
+}

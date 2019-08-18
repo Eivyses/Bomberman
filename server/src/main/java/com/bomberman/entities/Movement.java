@@ -9,6 +9,11 @@ public class Movement {
     this.dt = dt;
   }
 
+  public Movement(final Direction direction) {
+    this.direction = direction;
+    this.dt = 0.05f;
+  }
+
   public Movement() {}
 
   public Direction getDirection() {
