@@ -10,6 +10,8 @@ import com.bomberman.exception.PlayerAlreadyExistsException;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 class GameTest {
 
@@ -92,12 +94,13 @@ class GameTest {
     Assertions.assertEquals(1, game.getGameState().getBombs().size());
   }
 
-  @Test
-  void movePlayer_canMoveEverywhereFromCenterWithNoObstacles() {
+  @ParameterizedTest
+  @EnumSource(Direction.class)
+  void movePlayer_canMoveEverywhereFromCenterWithNoObstacles(final Direction direction) {
     final TestDataGenerator generator =
         TestDataGenerator.newGenerator().createPlayerAtColRow("player1", 5, 6);
     final Game game = new Game(generator.getGameState());
-    game.movePlayer("player1", new Movement(Direction.DOWN));
+    game.movePlayer("player1", new Movement(direction));
   }
 
   private void movePlayerByOneTile(
