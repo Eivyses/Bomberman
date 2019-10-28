@@ -13,6 +13,10 @@ export class GameScene extends Phaser.Scene {
   private defaultCursors: Phaser.Types.Input.Keyboard.CursorKeys;
   private wasdCursors: Phaser.Types.Input.Keyboard.CursorKeys;
 
+  private bombAnim: false | Phaser.Animations.Animation;
+  private bombSprite: Phaser.GameObjects.Sprite;
+  private bombConfig: Phaser.Types.Animations.Animation;
+
   constructor() {
     super({
       key: 'GameScene'
@@ -27,6 +31,18 @@ export class GameScene extends Phaser.Scene {
     this.load.image('pickup_bomb', 'assets/textures/Pickup_bomb.png');
     this.load.image('terrain', 'assets/textures/Terrain.png');
     this.load.image('wall', 'assets/textures/Wall.png');
+    this.load.spritesheet('bombBoom', 'assets/textures/Bomb_hd_sheet.png', {
+      frameWidth: 256,
+      frameHeight: 256
+    });
+    this.bombConfig = {
+      key: 'bombTick',
+      frames: this.anims.generateFrameNumbers('bombBoom', { start: 0, end: 3 }),
+      frameRate: 4,
+      yoyo: true,
+      repeat: -1
+    };
+    this.bombAnim = this.anims.create(this.bombConfig);
   }
 
   create(): void {
@@ -69,6 +85,9 @@ export class GameScene extends Phaser.Scene {
     }
     if (this.defaultCursors.space.isDown) {
       this.socketClient.placeBomb();
+    }
+    if (this.defaultCursors.shift.isDown) {
+      this.socketClient.respawnPlayer();
     }
 
     this.socketText.text = `socket is: ` + this.socketClient.isConnected();

@@ -17,6 +17,10 @@ export class Drawer {
   private terrainTexture: Phaser.GameObjects.Image;
   private pickupTextures: Phaser.GameObjects.Image[] = [];
 
+  private bombSprites: Phaser.GameObjects.Sprite[] = [];
+
+  private frame: number = 0;
+
   constructor(game: Phaser.Scene) {
     this.game = game;
     this.loadStaticGraphics();
@@ -35,7 +39,7 @@ export class Drawer {
       return;
     }
 
-    this.destroyOldGraphics();
+    this.destroyOldGraphics(gameState);
     this.drawBricks(gameState.bricks);
     this.drawWalls(gameState.walls);
     this.drawBombs(gameState.bombs);
@@ -71,12 +75,27 @@ export class Drawer {
   drawBombs(bombs: Bomb[]): void {
     bombs.forEach(bomb => this.drawBomb(bomb));
   }
+
   drawBomb(bomb: Bomb): void {
-    this.bombTextures.push(
-      this.game.add
-        .image(bomb.position.x, bomb.position.y, 'bomb')
-        .setOrigin(0, 0)
-    );
+    if (this.bombExists(bomb)) {
+      return;
+    }
+    let bombSprite = this.game.add
+      .sprite(bomb.position.x, bomb.position.y, 'bombBoom')
+      .setOrigin(0, 0)
+      .setScale(0.125);
+    this.bombSprites.push(bombSprite);
+    bombSprite.play('bombTick');
+  }
+
+  bombExists(bomb: Bomb): boolean {
+    for (let i = 0; i < this.bombSprites.length; i++) {
+      const pos = this.bombSprites[i].getTopLeft();
+      if (pos.x === bomb.position.x && pos.y === bomb.position.y) {
+        return true;
+      }
+    }
+    return false;
   }
 
   drawExplosions(bombExplosions: BombExplosion[]): void {
@@ -114,7 +133,7 @@ export class Drawer {
     );
   }
 
-  destroyOldGraphics() {
+  destroyOldGraphics(gameState: GameState) {
     []
       .concat(
         this.wallTextures,
@@ -125,5 +144,34 @@ export class Drawer {
         this.pickupTextures
       )
       .forEach((texture: Phaser.GameObjects.Image) => texture.destroy());
+
+    // TODO: prettify
+    let toDelete: Phaser.GameObjects.Sprite[] = [];
+    this.bombSprites.forEach(bombSprite => {
+      if (!this.bombSpriteExists(bombSprite, gameState.bombs)) {
+        bombSprite.destroy();
+        toDelete.push(bombSprite);
+      }
+    });
+    toDelete.forEach(item => {
+      const pos = this.bombSprites.indexOf(item);
+      this.bombSprites.splice(pos, 1);
+    });
+    console.log(this.bombSprites);
+  }
+
+  // TODO: prettify
+  bombSpriteExists(
+    bombSprite: Phaser.GameObjects.Sprite,
+    bombs: Bomb[]
+  ): boolean {
+    for (let i = 0; i < bombs.length; i++) {
+      const pos = bombs[i].position;
+      const spriteBomb = bombSprite.getTopLeft();
+      if (pos.x === spriteBomb.x && pos.y === spriteBomb.y) {
+        return true;
+      }
+    }
+    return false;
   }
 }
