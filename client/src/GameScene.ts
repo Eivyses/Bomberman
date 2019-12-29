@@ -13,10 +13,6 @@ export class GameScene extends Phaser.Scene {
   private defaultCursors: Phaser.Types.Input.Keyboard.CursorKeys;
   private wasdCursors: Phaser.Types.Input.Keyboard.CursorKeys;
 
-  private bombAnim: false | Phaser.Animations.Animation;
-  private bombSprite: Phaser.GameObjects.Sprite;
-  private bombConfig: Phaser.Types.Animations.Animation;
-
   constructor() {
     super({
       key: 'GameScene'
@@ -31,18 +27,32 @@ export class GameScene extends Phaser.Scene {
     this.load.image('pickup_bomb', 'assets/textures/Pickup_bomb.png');
     this.load.image('terrain', 'assets/textures/Terrain.png');
     this.load.image('wall', 'assets/textures/Wall.png');
-    this.load.spritesheet('bombBoom', 'assets/textures/Bomb_hd_sheet.png', {
-      frameWidth: 256,
-      frameHeight: 256
-    });
-    this.bombConfig = {
-      key: 'bombTick',
-      frames: this.anims.generateFrameNumbers('bombBoom', { start: 0, end: 3 }),
+
+    this.createAnimations();
+  }
+
+  createAnimations(): void {
+    this.anims.create({
+      key: 'bombAnim',
+      frames: this.anims.generateFrameNumbers('bombSprite', {
+        start: 0,
+        end: 3
+      }),
       frameRate: 4,
       yoyo: true,
       repeat: -1
-    };
-    this.bombAnim = this.anims.create(this.bombConfig);
+    });
+
+    this.anims.create({
+      key: 'playerAnim',
+      frames: this.anims.generateFrameNumbers('playerSprite', {
+        start: 0,
+        end: 5
+      }),
+      frameRate: 4,
+      yoyo: true,
+      repeat: -1
+    });
   }
 
   create(): void {
@@ -65,6 +75,25 @@ export class GameScene extends Phaser.Scene {
       'keydown_R',
       () => {
         this.socketClient.respawnPlayer();
+      },
+      this
+    );
+
+    this.input.keyboard.on(
+      'keydown_L',
+      () => {
+        console.log('explosion');
+        console.log(this.drawer.explosionTextures);
+        console.log('bomb');
+        console.log(this.drawer.bombSprites);
+        console.log('brick');
+        console.log(this.drawer.brickTextures);
+        console.log('pickup');
+        console.log(this.drawer.pickupTextures);
+        console.log('player');
+        console.log(this.drawer.playerSpritesMap);
+        console.log('wall');
+        console.log(this.drawer.wallTextures);
       },
       this
     );

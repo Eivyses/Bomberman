@@ -1,3 +1,4 @@
+import { MapObject } from '../entities/mapobject/MapObject';
 import { Pickup } from '../entities/mapobject/pickup/Pickup';
 import { Player } from '../entities/mapobject/Player';
 import { Wall } from '../entities/mapobject/Wall';
@@ -9,17 +10,16 @@ import { GameState } from './GameState';
 export class Drawer {
   private game: Phaser.Scene;
 
-  private wallTextures: Phaser.GameObjects.Image[] = [];
-  private bombTextures: Phaser.GameObjects.Image[] = [];
-  private playerTextures: Phaser.GameObjects.Image[] = [];
-  private brickTextures: Phaser.GameObjects.Image[] = [];
-  private explosionTextures: Phaser.GameObjects.Image[] = [];
-  private terrainTexture: Phaser.GameObjects.Image;
-  private pickupTextures: Phaser.GameObjects.Image[] = [];
+  wallTextures: Phaser.GameObjects.Image[] = [];
+  brickTextures: Phaser.GameObjects.Image[] = [];
+  explosionTextures: Phaser.GameObjects.Image[] = [];
+  terrainTexture: Phaser.GameObjects.Image;
+  pickupTextures: Phaser.GameObjects.Image[] = [];
 
-  private bombSprites: Phaser.GameObjects.Sprite[] = [];
+  bombSprites: Phaser.GameObjects.Sprite[] = [];
+  // playerSprites: Phaser.GameObjects.Sprite[] = [];
 
-  private frame: number = 0;
+  playerSpritesMap: Map<string, Phaser.GameObjects.Sprite> = new Map();
 
   constructor(game: Phaser.Scene) {
     this.game = game;
@@ -54,6 +54,10 @@ export class Drawer {
   }
 
   drawPickup(pickup: Pickup): void {
+    if (this.imageExists(pickup, this.pickupTextures)) {
+      return;
+    }
+
     this.pickupTextures.push(
       this.game.add
         .image(pickup.position.x, pickup.position.y, pickup.className)
@@ -65,6 +69,10 @@ export class Drawer {
     bricks.forEach(brick => this.drawBrick(brick));
   }
   drawBrick(brick: Brick): void {
+    if (this.imageExists(brick, this.brickTextures)) {
+      return;
+    }
+
     this.brickTextures.push(
       this.game.add
         .image(brick.position.x, brick.position.y, 'brick')
@@ -77,31 +85,55 @@ export class Drawer {
   }
 
   drawBomb(bomb: Bomb): void {
-    if (this.bombExists(bomb)) {
+    if (this.spriteExists(bomb, this.bombSprites)) {
       return;
     }
     let bombSprite = this.game.add
-      .sprite(bomb.position.x, bomb.position.y, 'bombBoom')
+      .sprite(bomb.position.x, bomb.position.y, 'bombSprite')
       .setOrigin(0, 0)
       .setScale(0.125);
     this.bombSprites.push(bombSprite);
-    bombSprite.play('bombTick');
+    bombSprite.play('bombAnim');
   }
 
-  bombExists(bomb: Bomb): boolean {
-    for (let i = 0; i < this.bombSprites.length; i++) {
-      const pos = this.bombSprites[i].getTopLeft();
-      if (pos.x === bomb.position.x && pos.y === bomb.position.y) {
-        return true;
-      }
-    }
-    return false;
+  spriteExists(
+    mapObject: MapObject,
+    sprites: Phaser.GameObjects.Sprite[]
+  ): boolean {
+    let answer: boolean = false;
+    sprites
+      .map(sprite => sprite.getTopLeft())
+      .forEach(pos => {
+        if (pos.x === mapObject.position.x && pos.y === mapObject.position.y) {
+          answer = true;
+        }
+      });
+    return answer;
+  }
+
+  imageExists(
+    mapObject: MapObject,
+    textures: Phaser.GameObjects.Image[]
+  ): boolean {
+    let answer: boolean = false;
+    textures
+      .map(texture => texture.getTopLeft())
+      .forEach(pos => {
+        if (pos.x === mapObject.position.x && pos.y === mapObject.position.y) {
+          answer = true;
+        }
+      });
+    return answer;
   }
 
   drawExplosions(bombExplosions: BombExplosion[]): void {
     bombExplosions.forEach(bombExplosion => this.drawExplosion(bombExplosion));
   }
   drawExplosion(bombExplosion: BombExplosion): void {
+    if (this.imageExists(bombExplosion, this.explosionTextures)) {
+      return;
+    }
+
     this.explosionTextures.push(
       this.game.add
         .image(bombExplosion.position.x, bombExplosion.position.y, 'explosion')
@@ -113,12 +145,22 @@ export class Drawer {
     players.forEach(player => this.drawPlayer(player));
   }
   drawPlayer(player: Player): void {
-    const texture: string = player.dead ? 'explosion' : 'player';
-    this.playerTextures.push(
-      this.game.add
-        .image(player.position.x, player.position.y, texture)
-        .setOrigin(0, 0)
-    );
+    // FIXME: get a death sprite/animation
+    if (player.dead) {
+      return;
+    }
+    let playerSprite = this.playerSpritesMap[player.id];
+    if (playerSprite) {
+      playerSprite.setPosition(player.position.x, player.position.y);
+      return;
+    }
+    // TODO: good luck with diagonal animations
+    playerSprite = this.game.add
+      .sprite(player.position.x, player.position.y, 'playerSprite')
+      .setOrigin(0, 0);
+    this.playerSpritesMap[player.id] = playerSprite;
+    // this.playerSprites.push(playerSprite);
+    playerSprite.play('playerAnim');
   }
 
   drawWalls(walls: Wall[]): void {
@@ -126,6 +168,10 @@ export class Drawer {
   }
 
   drawWall(wall: Wall): void {
+    if (this.imageExists(wall, this.wallTextures)) {
+      return;
+    }
+
     this.wallTextures.push(
       this.game.add
         .image(wall.position.x, wall.position.y, 'wall')
@@ -134,44 +180,76 @@ export class Drawer {
   }
 
   destroyOldGraphics(gameState: GameState) {
-    []
-      .concat(
-        this.wallTextures,
-        this.bombTextures,
-        this.playerTextures,
-        this.brickTextures,
-        this.explosionTextures,
-        this.pickupTextures
-      )
-      .forEach((texture: Phaser.GameObjects.Image) => texture.destroy());
+    this.destroyOldImages(gameState.walls, this.wallTextures);
+    this.destroyOldImages(gameState.bricks, this.brickTextures);
+    this.destroyOldImages(gameState.bombExplosions, this.explosionTextures);
+    this.destroyOldImages(gameState.pickups, this.pickupTextures);
 
-    // TODO: prettify
-    let toDelete: Phaser.GameObjects.Sprite[] = [];
-    this.bombSprites.forEach(bombSprite => {
-      if (!this.bombSpriteExists(bombSprite, gameState.bombs)) {
-        bombSprite.destroy();
-        toDelete.push(bombSprite);
+    this.destroyOldSprites(gameState.bombs, this.bombSprites);
+
+    this.destroyPlayers(gameState.players);
+  }
+
+  destroyOldImages(
+    mapObjects: MapObject[],
+    textures: Phaser.GameObjects.Image[]
+  ) {
+    let toDelete: Phaser.GameObjects.Image[] = [];
+    textures.forEach(texture => {
+      if (!this.mapObjectExists(texture, mapObjects)) {
+        texture.destroy();
+        toDelete.push(texture);
       }
     });
     toDelete.forEach(item => {
-      const pos = this.bombSprites.indexOf(item);
-      this.bombSprites.splice(pos, 1);
+      const pos = textures.indexOf(item);
+      textures.splice(pos, 1);
     });
-    console.log(this.bombSprites);
+  }
+
+  destroyOldSprites(
+    mapObjects: MapObject[],
+    textures: Phaser.GameObjects.Sprite[]
+  ) {
+    let toDelete: Phaser.GameObjects.Sprite[] = [];
+    textures.forEach(texture => {
+      if (!this.mapObjectExists(texture, mapObjects)) {
+        texture.destroy();
+        toDelete.push(texture);
+      }
+    });
+    toDelete.forEach(item => {
+      const pos = textures.indexOf(item);
+      textures.splice(pos, 1);
+    });
+  }
+
+  destroyPlayers(players: Player[]) {
+    players
+      .filter(player => player.dead)
+      .map(player => player.id)
+      .filter(playerId => this.playerSpritesMap[playerId])
+      .forEach(playerId => {
+        console.log('player destroyed');
+        this.playerSpritesMap[playerId].destroy();
+        this.playerSpritesMap[playerId] = undefined;
+      });
   }
 
   // TODO: prettify
-  bombSpriteExists(
-    bombSprite: Phaser.GameObjects.Sprite,
-    bombs: Bomb[]
+  mapObjectExists(
+    texture: Phaser.GameObjects.Sprite | Phaser.GameObjects.Image,
+    mapObjects: MapObject[]
   ): boolean {
-    for (let i = 0; i < bombs.length; i++) {
-      const pos = bombs[i].position;
-      const spriteBomb = bombSprite.getTopLeft();
-      if (pos.x === spriteBomb.x && pos.y === spriteBomb.y) {
-        return true;
-      }
-    }
-    return false;
+    const spritePos = texture.getTopLeft();
+    let answer: boolean = false;
+    mapObjects
+      .map(bomb => bomb.position)
+      .forEach(pos => {
+        if (pos.x === spritePos.x && pos.y === spritePos.y) {
+          answer = true;
+        }
+      });
+    return answer;
   }
 }

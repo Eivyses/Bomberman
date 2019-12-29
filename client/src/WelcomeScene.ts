@@ -13,10 +13,24 @@ export class WelcomeScene extends Phaser.Scene {
 
   preload(): void {
     this.load.image('bomb', 'assets/textures/Bomb_hd.png');
-    this.load.spritesheet('bombBoom', 'assets/textures/Bomb_hd_sheet.png', {
+    this.loadSpriteSheets();
+  }
+
+  loadSpriteSheets(): void {
+    this.load.spritesheet('bombSprite', 'assets/textures/Bomb_hd_sheet.png', {
       frameWidth: 256,
       frameHeight: 256
     });
+
+    // FIXME: use constants
+    this.load.spritesheet(
+      'playerSprite',
+      'assets/textures/bomberman_sprite.png',
+      {
+        frameWidth: 14,
+        frameHeight: 22
+      }
+    );
   }
 
   create(): void {
@@ -40,24 +54,5 @@ export class WelcomeScene extends Phaser.Scene {
     currentImage.scale = 0.5;
     // currentImage.displayWidth = 128;
     // currentImage.displayHeight = 128;
-
-    //  Show the whole animation sheet
-    // this.add.image(32, 32, 'bombBoom', '__BASE').setOrigin(0);
-
-    var config = {
-      key: 'walk',
-      frames: this.anims.generateFrameNumbers('bombBoom', { start: 0, end: 3 }),
-      frameRate: 4,
-      yoyo: true,
-      repeat: -1
-    };
-
-    this.anim = this.anims.create(config);
-
-    this.sprite = this.add
-      .sprite(400, 300, 'bombBoom')
-      .setOrigin(0, 0)
-      .setScale(0.5);
-    this.sprite.anims.play('walk');
   }
 }
