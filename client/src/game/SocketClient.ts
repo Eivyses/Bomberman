@@ -27,11 +27,7 @@ export class SocketClient {
   }
 
   public move(direction: Direction) {
-    let magic = {
-      direction: direction,
-      dt: 0.005
-    };
-    this.socket.emit('movePlayer', magic);
+    this.socket.emit('movePlayer', direction);
   }
 
   placeBomb() {
