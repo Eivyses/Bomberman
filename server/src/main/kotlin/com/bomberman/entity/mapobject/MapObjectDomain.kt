@@ -5,6 +5,7 @@ import com.bomberman.entity.BombPlacedZone
 import com.bomberman.entity.Position
 import com.bomberman.entity.mapobject.movable.Player
 import com.bomberman.game.GameState
+import com.bomberman.game.isOutOfBound
 import java.util.UUID
 
 data class Wall(override var position: Position) : MapObject(position) {
@@ -50,6 +51,7 @@ data class Bomb(
   fun hasLeftBombZone(playerId: String): Boolean =
       bombPlacedZoneList.firstOrNull { it.playerId == playerId }?.hasLeftBombZone ?: false
 
+  // TODO: somehow refactor this to not duplicate code
   fun bombExplosions(originalBombId: String, playerId: String,
       gameState: GameState): List<BombExplosion> {
     val bombExplosions = mutableListOf<BombExplosion>()
@@ -58,6 +60,9 @@ data class Bomb(
     for (x in 1..bombRange) {
       val position = Position(position.x + (x * textureWidth), position.y)
 
+      if (this.isOutOfBound(position)) {
+        break
+      }
       if (position.willHitObstacle(gameState.walls)) {
         break
       }
@@ -71,6 +76,9 @@ data class Bomb(
     for (x in 1..bombRange) {
       val position = Position(position.x - (x * textureWidth), position.y)
 
+      if (this.isOutOfBound(position)) {
+        break
+      }
       if (position.willHitObstacle(gameState.walls)) {
         break
       }
@@ -84,6 +92,9 @@ data class Bomb(
     for (y in 1..bombRange) {
       val position = Position(position.x, position.y + (y * textureHeight))
 
+      if (this.isOutOfBound(position)) {
+        break
+      }
       if (position.willHitObstacle(gameState.walls)) {
         break
       }
@@ -97,6 +108,9 @@ data class Bomb(
     for (y in 1..bombRange) {
       val position = Position(position.x, position.y - (y * textureHeight))
 
+      if (this.isOutOfBound(position)) {
+        break
+      }
       if (position.willHitObstacle(gameState.walls)) {
         break
       }

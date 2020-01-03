@@ -1,15 +1,16 @@
 package com.bomberman.game
 
+import com.bomberman.PICKUP_SPAWN_CHANCE
 import com.bomberman.PlayerAlreadyExistsException
 import com.bomberman.entity.Direction
 import com.bomberman.entity.mapobject.Bomb
 import com.bomberman.entity.mapobject.Brick
 import com.bomberman.entity.mapobject.movable.Player
-import com.bomberman.entity.mapobject.pickup.BombPickup
 import com.bomberman.entity.mapobject.pickup.Pickup
 import com.bomberman.factory.LevelFactory
 import com.bomberman.factory.PickupFactory
 import com.bomberman.factory.PlayerFactory
+import kotlin.random.Random
 
 class Game(
     private val playerFactory: PlayerFactory,
@@ -132,8 +133,8 @@ class Game(
     }
 
     bricksInExplosion
-        .map { it.createPickupAndRemoveBrick() }
-        .forEach { gameState.pickups += it }
+        .map { it.randomizePickupAndRemoveBrick() }
+        .forEach { it?.let(gameState.pickups::add) }
 
     gameState.bombExplosions -= explosions
   }
@@ -158,16 +159,22 @@ class Game(
     getPlayer(playerId).increaseMaxBombCount()
   }
 
-  private fun Brick.createPickupAndRemoveBrick(): BombPickup {
+  private fun Brick.randomizePickupAndRemoveBrick(): Pickup? {
     gameState.bricks.remove(this)
-    return pickupFactory.createBombPickup(this)
+    val chance = Random.nextInt(0, 100)
+    return when {
+      chance >= PICKUP_SPAWN_CHANCE -> {
+        pickupFactory.createRandomPickup(this)
+      }
+      else -> {
+        null
+      }
+    }
   }
 
   private fun Pickup.applyAndRemove(player: Player) {
     this.apply(player)
-    if (this is BombPickup) {
-      gameState.pickups.remove(this)
-    }
+    gameState.pickups.remove(this)
   }
 
 }
