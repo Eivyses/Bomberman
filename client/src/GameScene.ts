@@ -25,6 +25,8 @@ export class GameScene extends Phaser.Scene {
     this.load.image('brick', 'assets/textures/Brick.png');
     this.load.image('explosion', 'assets/textures/Explosion.png');
     this.load.image('pickup_bomb', 'assets/textures/Pickup_bomb.png');
+    this.load.image('pickup_range', 'assets/textures/Pickup_range.png');
+    this.load.image('pickup_speed', 'assets/textures/Pickup_speed.png');
     this.load.image('terrain', 'assets/textures/Terrain.png');
     this.load.image('wall', 'assets/textures/Wall.png');
 
