@@ -13,16 +13,16 @@ private const val HEIGHT = 11
 class LevelFactory {
   private val level = arrayOf(
       intArrayOf(1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0),
-      intArrayOf(0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0),
-      intArrayOf(0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0),
-      intArrayOf(0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 2, 1, 0),
-      intArrayOf(0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1, 0),
-      intArrayOf(0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0),
-      intArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0),
-      intArrayOf(0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 2, 1, 0, 1, 0),
-      intArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-      intArrayOf(0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 2, 1, 0, 1, 0),
-      intArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1))
+      intArrayOf(0, 1, 0, 1, 2, 1, 0, 1, 2, 1, 0, 1, 2, 1, 0),
+      intArrayOf(0, 0, 0, 2, 0, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0),
+      intArrayOf(0, 1, 0, 1, 0, 1, 2, 1, 0, 1, 0, 1, 2, 1, 0),
+      intArrayOf(0, 0, 2, 2, 2, 0, 2, 0, 2, 0, 2, 0, 0, 1, 0),
+      intArrayOf(2, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0),
+      intArrayOf(0, 0, 2, 0, 0, 0, 2, 0, 2, 0, 2, 0, 0, 1, 0),
+      intArrayOf(0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 2, 1, 2, 1, 0),
+      intArrayOf(0, 0, 2, 0, 0, 0, 2, 0, 2, 0, 0, 2, 0, 0, 0),
+      intArrayOf(2, 1, 0, 1, 2, 1, 0, 1, 0, 1, 2, 1, 0, 1, 0),
+      intArrayOf(0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1))
 
   fun createLevel(): GameState {
     val gameState = GameState()
