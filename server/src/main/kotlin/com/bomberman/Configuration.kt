@@ -10,4 +10,4 @@ const val PLAYER_SPEED_INCREASE_VALUE = 0.25f
 const val MAX_PLAYER_SPEED = 4f
 const val BASE_BOMB_RANGE = 2
 const val BOMB_DURATION = 3
-const val PICKUP_SPAWN_CHANCE = 40
+const val PICKUP_SPAWN_CHANCE = 33

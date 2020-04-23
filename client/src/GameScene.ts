@@ -87,7 +87,7 @@ export class GameScene extends Phaser.Scene {
         console.log('explosion');
         console.log(this.drawer.explosionTextures);
         console.log('bomb');
-        console.log(this.drawer.bombSprites);
+        console.log(this.drawer.bombSpritesMap);
         console.log('brick');
         console.log(this.drawer.brickTextures);
         console.log('pickup');

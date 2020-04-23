@@ -6,8 +6,8 @@ import { WelcomeScene } from './WelcomeScene';
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   title: 'Bomberman',
-  width: 1024,
-  height: 768,
+  width: 1920,
+  height: 1080,
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH
