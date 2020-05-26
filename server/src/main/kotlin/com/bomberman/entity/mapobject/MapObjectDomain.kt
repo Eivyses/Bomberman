@@ -51,77 +51,51 @@ data class Bomb(
   fun hasLeftBombZone(playerId: String): Boolean =
       bombPlacedZoneList.firstOrNull { it.playerId == playerId }?.hasLeftBombZone ?: false
 
-  // TODO: somehow refactor this to not duplicate code
   fun bombExplosions(originalBombId: String, playerId: String,
       gameState: GameState): List<BombExplosion> {
     val bombExplosions = mutableListOf<BombExplosion>()
     bombExplosions += BombExplosion(originalBombId, playerId, position)
 
-    for (x in 1..bombRange) {
-      val position = Position(position.x + (x * textureWidth), position.y)
-
-      if (this.isOutOfBound(position)) {
-        break
-      }
-      if (position.willHitObstacle(gameState.walls)) {
-        break
-      }
-      if (position.willHitObstacle(gameState.bricks)) {
-        bombExplosions += BombExplosion(originalBombId, playerId, position)
-        break
-      }
-      bombExplosions += BombExplosion(originalBombId, playerId, position)
+    bombExplosions += createExplosionsForPosition(originalBombId, gameState) {
+      Position(position.x + (it * textureWidth), position.y)
     }
-
-    for (x in 1..bombRange) {
-      val position = Position(position.x - (x * textureWidth), position.y)
-
-      if (this.isOutOfBound(position)) {
-        break
-      }
-      if (position.willHitObstacle(gameState.walls)) {
-        break
-      }
-      if (position.willHitObstacle(gameState.bricks)) {
-        bombExplosions += BombExplosion(originalBombId, playerId, position)
-        break
-      }
-      bombExplosions += BombExplosion(originalBombId, playerId, position)
+    bombExplosions += createExplosionsForPosition(originalBombId, gameState) {
+      Position(position.x  - (it * textureWidth), position.y)
     }
-
-    for (y in 1..bombRange) {
-      val position = Position(position.x, position.y + (y * textureHeight))
-
-      if (this.isOutOfBound(position)) {
-        break
-      }
-      if (position.willHitObstacle(gameState.walls)) {
-        break
-      }
-      if (position.willHitObstacle(gameState.bricks)) {
-        bombExplosions += BombExplosion(originalBombId, playerId, position)
-        break
-      }
-      bombExplosions += BombExplosion(originalBombId, playerId, position)
+    bombExplosions += createExplosionsForPosition(originalBombId, gameState) {
+      Position(position.x, position.y + (it * textureHeight))
     }
-
-    for (y in 1..bombRange) {
-      val position = Position(position.x, position.y - (y * textureHeight))
-
-      if (this.isOutOfBound(position)) {
-        break
-      }
-      if (position.willHitObstacle(gameState.walls)) {
-        break
-      }
-      if (position.willHitObstacle(gameState.bricks)) {
-        bombExplosions += BombExplosion(originalBombId, playerId, position)
-        break
-      }
-      bombExplosions += BombExplosion(originalBombId, playerId, position)
+    bombExplosions += createExplosionsForPosition(originalBombId, gameState) {
+      Position(position.x, position.y - (it * textureHeight))
     }
 
     return bombExplosions
+  }
+
+  private fun createExplosionsForPosition(originalBombId: String, gameState: GameState, positionFun: (Int) -> Position): List<BombExplosion> {
+    val bombExplosions = mutableListOf<BombExplosion>()
+    for (pos in 1..bombRange) {
+      val position = positionFun(pos)
+      val (isStop, explosion) = createExplosionAndCheckStop(originalBombId, position, gameState)
+      explosion?.let { bombExplosions += it }
+      if (isStop) {
+        break
+      }
+    }
+    return bombExplosions
+  }
+
+  private fun createExplosionAndCheckStop(originalBombId: String, position: Position, gameState: GameState): Pair<Boolean, BombExplosion?> {
+    if (this.isOutOfBound(position)) {
+      return true to null
+    }
+    if (position.willHitObstacle(gameState.walls)) {
+      return true to null
+    }
+    if (position.willHitObstacle(gameState.bricks)) {
+      return true to BombExplosion(originalBombId, playerId, position)
+    }
+    return false to BombExplosion(originalBombId, playerId, position)
   }
 
   private fun Position.willHitObstacle(obstacles: List<MapObject>): Boolean =
