@@ -7,7 +7,6 @@ import {BombExplosion} from '../entities/mapobject/BombExplosion';
 import {Brick} from '../entities/mapobject/Brick';
 import {GameState} from './GameState';
 import {Configuration} from "../constant/Configuration";
-import {Position} from "../entities/Position";
 import Image = Phaser.GameObjects.Image;
 import Sprite = Phaser.GameObjects.Sprite;
 
@@ -167,9 +166,9 @@ export class Drawer {
         this.destroyOldImages(gameState.bricks, this.brickTextures);
         this.destroyOldImages(gameState.pickups, this.pickupTextures);
 
-        this.destroyBombs(gameState.bombs);
         this.destroyPlayers(gameState.players);
-        this.destroyExplosions(gameState.bombExplosions);
+        this.destroySprites(gameState.bombs, this.bombSpritesMap, ((mapObject: Bomb) => mapObject.bombId))
+        this.destroySprites(gameState.bombExplosions, this.explosionSpritesMap);
     }
 
     destroyOldImages(
@@ -189,23 +188,18 @@ export class Drawer {
         });
     }
 
-    destroyBombs(bombs: Bomb[]) {
-        let bombIds = bombs.map(bomb => bomb.bombId);
-        this.bombSpritesMap.forEach((value, key) => {
-            if (!bombIds.includes(key)) {
-                this.bombSpritesMap.get(key).destroy();
-                this.bombSpritesMap.delete(key);
-            }
-        });
+    private defaultConvertFun = function (mapObject: MapObject) {
+        return mapObject.position.asString()
     }
 
-    // TODO: rework to be generic
-    destroyExplosions(explosions: BombExplosion[]) {
-        let positions = explosions.map(explosion => explosion.position.asString());
-        this.explosionSpritesMap.forEach((value, key) => {
+    destroySprites(mapObjects: MapObject[],
+                   spriteMap: Map<string, Sprite>,
+                   convertFunction: (mapObject: MapObject) => string = this.defaultConvertFun) {
+        let positions = mapObjects.map(convertFunction);
+        spriteMap.forEach((value, key) => {
             if (!positions.includes(key)) {
-                this.explosionSpritesMap.get(key).destroy();
-                this.explosionSpritesMap.delete(key);
+                spriteMap.get(key).destroy();
+                spriteMap.delete(key);
             }
         });
     }
