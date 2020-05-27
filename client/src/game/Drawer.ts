@@ -89,7 +89,7 @@ export class Drawer {
             bombSprite.setPosition(bomb.position.x * Configuration.SCALE_FACTOR, bomb.position.y * Configuration.SCALE_FACTOR);
             return;
         }
-        bombSprite = this.createAndScaleSprite(bomb, 'bombSprite', 0.125);
+        bombSprite = this.createAndScaleSprite(bomb, 'bombSprite', 0.18);
         this.bombSpritesMap.set(bomb.bombId, bombSprite);
         bombSprite.play('bombAnim');
     }

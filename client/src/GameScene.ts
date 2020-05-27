@@ -40,8 +40,8 @@ export class GameScene extends Phaser.Scene {
         start: 0,
         end: 3
       }),
-      frameRate: 4,
-      yoyo: true,
+      frameRate: 1.3,
+      yoyo: false,
       repeat: -1
     });
 
@@ -51,7 +51,7 @@ export class GameScene extends Phaser.Scene {
         start: 1,
         end: 32
       }),
-      frameRate: 31,
+      frameRate: 24,
       yoyo: false,
       repeat: 0
     });
