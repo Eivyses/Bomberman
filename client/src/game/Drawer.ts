@@ -9,18 +9,19 @@ import {GameState} from './GameState';
 import {Configuration} from "../constant/Configuration";
 import Image = Phaser.GameObjects.Image;
 import Sprite = Phaser.GameObjects.Sprite;
+import {Position} from "../entities/Position";
 
 export class Drawer {
     private game: Phaser.Scene;
 
     wallTextures: Phaser.GameObjects.Image[] = [];
     brickTextures: Phaser.GameObjects.Image[] = [];
-    explosionTextures: Phaser.GameObjects.Image[] = [];
     terrainTexture: Phaser.GameObjects.Image;
     pickupTextures: Phaser.GameObjects.Image[] = [];
 
     playerSpritesMap: Map<string, Phaser.GameObjects.Sprite> = new Map();
     bombSpritesMap: Map<string, Phaser.GameObjects.Sprite> = new Map();
+    explosionSpritesMap: Map<string, Phaser.GameObjects.Sprite> = new Map();
 
     constructor(game: Phaser.Scene) {
         this.game = game;
@@ -121,11 +122,13 @@ export class Drawer {
     }
 
     drawExplosion(bombExplosion: BombExplosion): void {
-        if (this.imageExists(bombExplosion, this.explosionTextures)) {
+        let explosionSprite = this.explosionSpritesMap.get(this.asMapKey(bombExplosion.position));
+        if (explosionSprite) {
             return;
         }
-
-        this.explosionTextures.push(this.createAndScaleImage(bombExplosion, 'explosion'));
+        explosionSprite = this.createAndScaleSprite(bombExplosion, 'explosionSprite', 0.125);
+        this.explosionSpritesMap.set(this.asMapKey(bombExplosion.position), explosionSprite);
+        explosionSprite.play('explosionAnim');
     }
 
     drawPlayers(players: Player[]): void {
@@ -163,11 +166,11 @@ export class Drawer {
     destroyOldGraphics(gameState: GameState) {
         this.destroyOldImages(gameState.walls, this.wallTextures);
         this.destroyOldImages(gameState.bricks, this.brickTextures);
-        this.destroyOldImages(gameState.bombExplosions, this.explosionTextures);
         this.destroyOldImages(gameState.pickups, this.pickupTextures);
 
         this.destroyBombs(gameState.bombs);
         this.destroyPlayers(gameState.players);
+        this.destroyExplosions(gameState.bombExplosions);
     }
 
     destroyOldImages(
@@ -193,6 +196,17 @@ export class Drawer {
             if (!bombIds.includes(key)) {
                 this.bombSpritesMap.get(key).destroy();
                 this.bombSpritesMap.delete(key);
+            }
+        });
+    }
+
+    // TODO: rework to be generic
+    destroyExplosions(explosions: BombExplosion[]) {
+        let positions = explosions.map(explosion => this.asMapKey(explosion.position));
+        this.explosionSpritesMap.forEach((value, key) => {
+            if (!positions.includes(key)) {
+                this.explosionSpritesMap.get(key).destroy();
+                this.explosionSpritesMap.delete(key);
             }
         });
     }
@@ -223,5 +237,9 @@ export class Drawer {
                 }
             });
         return answer;
+    }
+
+    private asMapKey(position: Position): string {
+        return `${position.x}:${position.y}`;
     }
 }

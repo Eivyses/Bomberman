@@ -46,6 +46,17 @@ export class GameScene extends Phaser.Scene {
     });
 
     this.anims.create({
+      key: 'explosionAnim',
+      frames: this.anims.generateFrameNumbers('explosionSprite', {
+        start: 1,
+        end: 32
+      }),
+      frameRate: 31,
+      yoyo: false,
+      repeat: 0
+    });
+
+    this.anims.create({
       key: 'playerAnim',
       frames: this.anims.generateFrameNumbers('playerSprite', {
         start: 0,
@@ -85,7 +96,7 @@ export class GameScene extends Phaser.Scene {
       'keydown_L',
       () => {
         console.log('explosion');
-        console.log(this.drawer.explosionTextures);
+        console.log(this.drawer.explosionSpritesMap);
         console.log('bomb');
         console.log(this.drawer.bombSpritesMap);
         console.log('brick');

@@ -22,6 +22,11 @@ export class WelcomeScene extends Phaser.Scene {
       frameHeight: 256
     });
 
+    this.load.spritesheet('explosionSprite', 'assets/textures/fancy_bomb_sprite.png', {
+      frameWidth: 256,
+      frameHeight: 251
+    });
+
     // FIXME: use constants
     this.load.spritesheet(
       'playerSprite',
@@ -48,11 +53,23 @@ export class WelcomeScene extends Phaser.Scene {
       this
     );
 
-    let currentImage: Phaser.GameObjects.Image = this.add
-      .image(300, 200, 'bomb')
-      .setOrigin(0, 0);
-    currentImage.scale = 0.5;
-    // currentImage.displayWidth = 128;
-    // currentImage.displayHeight = 128;
+    this.add.image(300, 200, 'bomb')
+      .setOrigin(0, 0)
+        .setScale(0.5);
+
+    this.anim = this.anims.create({
+      key: 'bombAnim',
+      frames: this.anims.generateFrameNumbers('bombSprite', {
+        start: 0,
+        end: 32
+      }),
+      frameRate: 10,
+      yoyo: false,
+      repeat: -1
+    });
+    this.sprite = this.add.sprite(400, 400, 'bombSprite')
+        .setOrigin(0,0)
+        .setScale(1);
+    this.sprite.play('bombAnim');
   }
 }
