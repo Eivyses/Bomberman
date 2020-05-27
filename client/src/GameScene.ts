@@ -137,6 +137,6 @@ export class GameScene extends Phaser.Scene {
   }
 
   destroy(): void {
-    this.socketClient.disconnnect();
+    this.socketClient.disconnect();
   }
 }

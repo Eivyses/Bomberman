@@ -1,5 +1,5 @@
 import {MapObject} from '../entities/mapobject/MapObject';
-import {Pickup} from '../entities/mapobject/pickup/Pickup';
+import {Pickup} from '../entities/mapobject/Pickup';
 import {Player} from '../entities/mapobject/Player';
 import {Wall} from '../entities/mapobject/Wall';
 import {Bomb} from '../entities/mapobject/Bomb';
@@ -7,13 +7,12 @@ import {BombExplosion} from '../entities/mapobject/BombExplosion';
 import {Brick} from '../entities/mapobject/Brick';
 import {GameState} from './GameState';
 import {Configuration} from "../constant/Configuration";
+import {Position} from "../entities/Position";
 import Image = Phaser.GameObjects.Image;
 import Sprite = Phaser.GameObjects.Sprite;
-import {Position} from "../entities/Position";
 
 export class Drawer {
     private game: Phaser.Scene;
-
     wallTextures: Phaser.GameObjects.Image[] = [];
     brickTextures: Phaser.GameObjects.Image[] = [];
     terrainTexture: Phaser.GameObjects.Image;
@@ -122,12 +121,12 @@ export class Drawer {
     }
 
     drawExplosion(bombExplosion: BombExplosion): void {
-        let explosionSprite = this.explosionSpritesMap.get(this.asMapKey(bombExplosion.position));
+        let explosionSprite = this.explosionSpritesMap.get(bombExplosion.position.asString());
         if (explosionSprite) {
             return;
         }
         explosionSprite = this.createAndScaleSprite(bombExplosion, 'explosionSprite', 0.125);
-        this.explosionSpritesMap.set(this.asMapKey(bombExplosion.position), explosionSprite);
+        this.explosionSpritesMap.set(bombExplosion.position.asString(), explosionSprite);
         explosionSprite.play('explosionAnim');
     }
 
@@ -202,7 +201,7 @@ export class Drawer {
 
     // TODO: rework to be generic
     destroyExplosions(explosions: BombExplosion[]) {
-        let positions = explosions.map(explosion => this.asMapKey(explosion.position));
+        let positions = explosions.map(explosion => explosion.position.asString());
         this.explosionSpritesMap.forEach((value, key) => {
             if (!positions.includes(key)) {
                 this.explosionSpritesMap.get(key).destroy();
@@ -237,9 +236,5 @@ export class Drawer {
                 }
             });
         return answer;
-    }
-
-    private asMapKey(position: Position): string {
-        return `${position.x}:${position.y}`;
     }
 }

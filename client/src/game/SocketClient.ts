@@ -1,12 +1,13 @@
 import * as io from 'socket.io-client';
 import { Configuration } from '../constant/Configuration';
-import { Direction } from './../entities/Direction';
-import { GameState } from './GameState';
+import { Direction } from '../entities/Direction';
+import {GameState, GameStateAdapter} from './GameState';
 import { MainGame } from './MainGame';
 
 export class SocketClient {
   private socket: SocketIOClient.Socket;
   private mainGame: MainGame;
+  private  gameStateAdapter = new GameStateAdapter()
 
   constructor(mainGame: MainGame) {
     this.mainGame = mainGame;
@@ -34,7 +35,7 @@ export class SocketClient {
     this.socket.emit('placeBomb');
   }
 
-  disconnnect() {
+  disconnect() {
     this.socket.emit('disconnectPlayer');
   }
 
@@ -54,8 +55,8 @@ export class SocketClient {
     this.socket.emit('increasePlayerSpeed');
   }
 
-  dereasePlayerSpeed(): void {
-    this.socket.emit('dereasePlayerSpeed');
+  decreasePlayerSpeed(): void {
+    this.socket.emit('decreasePlayerSpeed');
   }
 
   increaseMaxBombCount(): void {
@@ -80,7 +81,7 @@ export class SocketClient {
     });
 
     this.socket.addEventListener('getGameState', (gameState: GameState) => {
-      this.mainGame.gameState = gameState;
+      this.mainGame.gameState = this.gameStateAdapter.adapt(gameState);
     });
   }
 }
