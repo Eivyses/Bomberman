@@ -25,13 +25,12 @@ export class WelcomeScene extends Phaser.Scene {
             frameHeight: 251
         });
 
-        // FIXME: use constants
         this.load.spritesheet(
-            'playerSprite',
-            'assets/textures/bomberman_sprite.png',
+            'playerMoveSprite',
+            'assets/textures/player_moving_sprite.png',
             {
-                frameWidth: 14,
-                frameHeight: 22
+                frameWidth: 50,
+                frameHeight: 85
             }
         );
     }

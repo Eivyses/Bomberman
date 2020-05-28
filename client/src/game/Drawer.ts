@@ -7,6 +7,7 @@ import {BombExplosion} from '../entities/mapobject/BombExplosion';
 import {Brick} from '../entities/mapobject/Brick';
 import {GameState} from './GameState';
 import {Configuration} from "../constant/Configuration";
+import {Direction} from "../entities/Direction";
 import Image = Phaser.GameObjects.Image;
 import Sprite = Phaser.GameObjects.Sprite;
 
@@ -140,13 +141,32 @@ export class Drawer {
         }
         let playerSprite = this.playerSpritesMap.get(player.id);
         if (playerSprite) {
+            this.moveSprite(playerSprite, player.direction);
             playerSprite.setPosition(player.position.x * Configuration.SCALE_FACTOR, player.position.y * Configuration.SCALE_FACTOR);
             return;
         }
-        // TODO: good luck with movement animations
-        playerSprite = this.createAndScaleSprite(player, 'playerSprite');
+        // TODO: scaling is a bit off
+        playerSprite = this.createAndScaleSprite(player, 'playerMoveSprite', 0.25);
         this.playerSpritesMap.set(player.id, playerSprite);
-        playerSprite.play('playerAnim');
+        this.moveSprite(playerSprite, player.direction);
+    }
+
+    moveSprite(sprite: Sprite, direction: Direction) {
+        if (direction === Direction.UP) {
+            sprite.play('playerUp', true)
+        }
+        if (direction === Direction.DOWN) {
+            sprite.play('playerDown', true)
+        }
+        if (direction === Direction.LEFT) {
+            sprite.play('playerLeft', true)
+        }
+        if (direction === Direction.RIGHT) {
+            sprite.play('playerRight', true)
+        }
+        if (direction === Direction.IDLE) {
+            sprite.anims.stop()
+        }
     }
 
     drawWalls(walls: Wall[]): void {
