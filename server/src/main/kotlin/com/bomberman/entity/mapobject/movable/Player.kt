@@ -8,6 +8,7 @@ import com.bomberman.MAX_PLAYER_SPEED
 import com.bomberman.PLAYER_SPEED_INCREASE_VALUE
 import com.bomberman.PLAYER_TEXTURE_HEIGHT
 import com.bomberman.PLAYER_TEXTURE_WIDTH
+import com.bomberman.entity.Direction
 import com.bomberman.entity.Position
 import com.bomberman.entity.mapobject.MapObject
 import com.bomberman.game.GameState
@@ -15,16 +16,17 @@ import com.bomberman.game.isOutOfBound
 import com.bomberman.game.willCollide
 
 data class Player(
-    val id: String,
-    val bombDurationInSeconds: Int = BOMB_DURATION,
-    var speed: Float = BASE_PLAYER_SPEED,
-    var bombRange: Int = BASE_BOMB_RANGE,
-    var placedBombCount: Int = 0,
-    var maxBombCount: Int = 1,
-    private val gameState: GameState,
-    var dead: Boolean = false,
-    var killCount: Int = 0,
-    override var position: Position
+        val id: String,
+        val bombDurationInSeconds: Int = BOMB_DURATION,
+        var speed: Float = BASE_PLAYER_SPEED,
+        var bombRange: Int = BASE_BOMB_RANGE,
+        var placedBombCount: Int = 0,
+        var maxBombCount: Int = 1,
+        private val gameState: GameState,
+        var dead: Boolean = false,
+        var killCount: Int = 0,
+        var direction: Int = Direction.IDLE.value,
+        override var position: Position
 ) : MapObject(position), Movable {
 
   override fun move(position: Position) {

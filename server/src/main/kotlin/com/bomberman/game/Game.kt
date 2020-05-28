@@ -42,11 +42,10 @@ class Game(
 
   fun movePlayer(playerId: String, direction: Direction) {
     val player = getPlayer(playerId)
-
-    if (player.dead) {
+    player.direction = direction.value
+    if (player.dead || direction == Direction.IDLE) {
       return
     }
-
     val movementSpeed = player.speed
     val position = direction.buildPosition(player.position, movementSpeed)
     player.move(position)

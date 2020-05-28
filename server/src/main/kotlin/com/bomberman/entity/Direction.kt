@@ -1,7 +1,7 @@
 package com.bomberman.entity
 
 enum class Direction(val value: Int) {
-    UP(0), DOWN(1), LEFT(2), RIGHT(3);
+    UP(0), DOWN(1), LEFT(2), RIGHT(3), IDLE(4);
 
     fun buildPosition(playerPosition: Position, movementSpeed: Float): Position {
         val x: Float
@@ -21,6 +21,10 @@ enum class Direction(val value: Int) {
             }
             RIGHT -> {
                 x = playerPosition.x + movementSpeed
+                y = playerPosition.y
+            }
+            else -> {
+                x = playerPosition.x
                 y = playerPosition.y
             }
         }
